@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Anestex">
+<meta name="theme-color" content="#0b0f14">
+<title>Anestex</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjMGIwZjE0Ii8+PHBhdGggZD0iTTMwIDEyMCBMNjAgMTIwIEw3MiA5MCBMOTAgMTQwIEwxMDggNjAgTDEyMCAxMjAgTDE1MCAxMjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzRkZDBhNyIgc3Ryb2tlLXdpZHRoPSIxMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+">
+<style>
+:root{
+  --bg:#0b0f14; --bg2:#0f151c; --card:#151d26; --card2:#1b2530;
+  --line:#25313d; --tx:#e8eef4; --mut:#8ba0b3; --acc:#4dd0a7; --acc2:#2fa383;
+  --warn:#f0b429; --dang:#ef5f5f; --info:#5aa9e6; --blue:#4c7ef3;
+  --safe-t:env(safe-area-inset-top); --safe-b:env(safe-area-inset-bottom);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--tx);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+  font-size:16px;line-height:1.45;-webkit-text-size-adjust:100%;overscroll-behavior:none}
+body{padding-bottom:calc(76px + var(--safe-b))}
+input,select,button,textarea{font-family:inherit;font-size:16px;color:inherit}
+
+header{position:sticky;top:0;z-index:50;background:rgba(11,15,20,.93);
+  backdrop-filter:saturate(160%) blur(14px);-webkit-backdrop-filter:saturate(160%) blur(14px);
+  border-bottom:1px solid var(--line);padding:calc(var(--safe-t) + 9px) 14px 9px}
+.hrow{display:flex;align-items:center;gap:10px;min-height:34px}
+.logo{font-weight:800;letter-spacing:.5px;font-size:18px}
+.logo b{color:var(--acc)}
+.htitle{font-weight:700;font-size:17px;position:absolute;left:50%;transform:translateX(-50%)}
+.back{background:none;border:none;color:var(--acc);font-weight:600;font-size:15px;display:flex;align-items:center;gap:3px;padding:4px 6px 4px 0;cursor:pointer}
+.back svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.chip{margin-left:auto;background:var(--card);border:1px solid var(--line);border-radius:999px;
+  padding:6px 13px;font-size:13px;font-weight:600;color:var(--tx);white-space:nowrap;cursor:pointer}
+.chip span{color:var(--acc);font-variant-numeric:tabular-nums}
+.chip:active{background:var(--card2)}
+
+main{padding:12px 14px 20px;max-width:760px;margin:0 auto}
+.view{display:none;animation:fade .16s ease}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+.card h2{margin:0 0 10px;font-size:13px;letter-spacing:.7px;text-transform:uppercase;color:var(--mut);font-weight:700}
+
+label{display:block;font-size:12.5px;color:var(--mut);font-weight:600;margin:0 0 5px;letter-spacing:.3px}
+input[type=number],input[type=text],select{width:100%;background:var(--bg2);border:1px solid var(--line);
+  border-radius:11px;padding:12px;color:var(--tx);font-weight:600;appearance:none;-webkit-appearance:none}
+input:focus,select:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(77,208,167,.13)}
+select{background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238ba0b3' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;background-size:16px;padding-right:34px}
+
+.search{position:relative;margin-bottom:12px}
+.search input{padding-left:38px}
+.search::before{content:"";position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  width:17px;height:17px;background:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238ba0b3' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E") no-repeat center/contain}
+
+/* listas estilo InfusiCalc: linhas com separador */
+.rows{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.rows .r{display:flex;align-items:center;gap:10px;padding:14px 14px;border-bottom:1px solid rgba(37,49,61,.7);cursor:pointer}
+.rows .r:last-child{border-bottom:none}
+.rows .r:active{background:var(--card2)}
+.rows .r .nm{font-weight:600;font-size:16px}
+.rows .r .en{font-size:12px;color:var(--mut);font-weight:500}
+.rows .r .rt{margin-left:auto;font-size:12.5px;color:var(--acc);font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.rows .r .cnt{margin-left:auto;background:var(--card2);color:var(--mut);border-radius:999px;font-size:12px;font-weight:700;padding:2px 10px;min-width:34px;text-align:center}
+.rows .r .chev{width:9px;height:9px;border-right:2px solid var(--mut);border-bottom:2px solid var(--mut);transform:rotate(-45deg);flex:none;margin-left:2px}
+.rows .r.fav .nm::after{content:"★";color:var(--warn);margin-left:7px;font-size:13px}
+.star{background:none;border:none;color:var(--mut);font-size:20px;cursor:pointer;padding:2px 4px;line-height:1}
+.star.on{color:var(--warn)}
+.sechead{font-size:12px;font-weight:800;letter-spacing:1px;color:var(--mut);text-transform:uppercase;padding:16px 4px 7px}
+
+.tag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;
+  padding:2px 7px;border-radius:6px;background:rgba(90,169,230,.15);color:#8cc4ee;vertical-align:1px;margin-right:7px}
+
+/* sub-abas Infusão/Bolus/Nota */
+.segs{display:flex;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px;margin-bottom:14px}
+.segs button{flex:1;background:transparent;border:none;border-radius:9px;padding:9px 4px;font-size:14px;font-weight:700;color:var(--mut);cursor:pointer}
+.segs button.on{background:var(--acc);color:#06221a}
+
+/* linha de cálculo estilo InfusiCalc: label | input | unidade */
+.cline{display:grid;grid-template-columns:62px minmax(0,1fr) 128px;gap:7px;align-items:center;margin-bottom:9px}
+.cline .lb{font-size:13.5px;font-weight:600;color:var(--mut);text-align:right;white-space:nowrap}
+.cline .lb.eq{font-size:20px;color:var(--acc);font-weight:400}
+.cline input{text-align:right;font-size:17px;font-variant-numeric:tabular-nums}
+.cline input.res{background:#12211d;border-color:#28483d;color:var(--acc);font-weight:800}
+.cline select{font-size:12.5px;padding:12px 26px 12px 8px;letter-spacing:-.2px}
+.cline .ustatic{font-size:13px;font-weight:600;color:var(--mut);padding-left:3px;white-space:nowrap}
+.rangebox{background:var(--bg2);border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin:4px 0 2px;font-size:13.5px;color:var(--mut);font-variant-numeric:tabular-nums}
+.rangebox b{color:var(--tx)}
+.hint{font-size:12px;color:var(--mut);margin:2px 0 0 82px}
+
+.flag{display:flex;gap:8px;align-items:flex-start;font-size:13px;border-radius:11px;padding:10px 12px;margin-top:10px}
+.flag.w{background:rgba(240,180,41,.1);border:1px solid rgba(240,180,41,.35);color:#f6d08a}
+.flag.d{background:rgba(239,95,95,.1);border:1px solid rgba(239,95,95,.35);color:#ffa9a9}
+.flag.i{background:rgba(90,169,230,.1);border:1px solid rgba(90,169,230,.32);color:#a8d3f5}
+.flag b{color:inherit}
+
+.note{font-size:14.5px;line-height:1.6;white-space:pre-wrap}
+.note .h{font-weight:700;color:var(--tx);margin-top:12px}
+.notecalc{font-weight:800;color:var(--acc);font-variant-numeric:tabular-nums}
+
+table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--mut);padding:6px;border-bottom:1px solid var(--line);font-weight:700}
+td{padding:8px 6px;border-bottom:1px solid rgba(37,49,61,.6)}
+tr:last-child td{border-bottom:none}
+td.num{text-align:right;font-weight:700;color:var(--acc)}
+.wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+.kv{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid rgba(37,49,61,.6);font-size:14.5px}
+.kv:last-child{border-bottom:none}
+.kv span:first-child{color:var(--mut)}
+.kv span:last-child{font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.kv b{color:var(--acc)}
+
+.acc{border:1px solid var(--line);border-radius:13px;margin-bottom:8px;overflow:hidden;background:var(--card)}
+.acc>summary{padding:12px 14px;font-weight:700;font-size:15px;cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+.acc>summary::-webkit-details-marker{display:none}
+.acc>summary::after{content:"";margin-left:auto;width:9px;height:9px;border-right:2.5px solid var(--mut);border-bottom:2.5px solid var(--mut);transform:rotate(45deg);transition:.2s;flex:none}
+.acc[open]>summary::after{transform:rotate(-135deg)}
+.acc .body{padding:0 14px 14px;font-size:14.3px;line-height:1.6}
+.acc .body p{margin:6px 0}
+.dose{color:var(--acc);font-weight:800;font-variant-numeric:tabular-nums}
+.mut{color:var(--mut)} .sm{font-size:12.5px}
+
+nav{position:fixed;bottom:0;left:0;right:0;z-index:60;display:flex;background:rgba(13,18,24,.96);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line);padding-bottom:var(--safe-b)}
+nav button{flex:1;background:none;border:none;padding:8px 2px 7px;color:var(--mut);font-size:10.5px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
+nav button svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+nav button.on{color:var(--acc)}
+
+.modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.6);display:none;align-items:flex-end}
+.modal.on{display:flex}
+.sheet{background:var(--bg2);width:100%;border-radius:20px 20px 0 0;padding:18px 16px calc(20px + var(--safe-b));border-top:1px solid var(--line);animation:up .22s cubic-bezier(.2,.8,.3,1)}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.sheet h3{margin:0 0 14px;font-size:17px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{background:var(--card2);border:1px solid var(--line);border-radius:11px;padding:11px 14px;font-weight:700;font-size:14px;color:var(--tx);cursor:pointer;width:100%}
+.btn.p{background:var(--acc);color:#06221a;border-color:var(--acc)}
+.foot{text-align:center;font-size:11.5px;color:#5d6f80;padding:16px 6px 4px;line-height:1.6}
+.empty{text-align:center;color:var(--mut);font-size:14px;padding:40px 20px}
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+</head>
+<body>
+
+<header>
+  <div class="hrow">
+    <button class="back" id="backBtn" style="display:none"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg><span id="backTx">Voltar</span></button>
+    <div class="logo" id="hlogo">ANE<b>STEX</b></div>
+    <div class="htitle" id="htitle" style="display:none"></div>
+    <button class="chip" id="chipW">Peso <span id="chipWv">70</span> kg</button>
+  </div>
+</header>
+
+<main>
+  <section class="view on" id="v-drg"></section>
+  <section class="view" id="v-sets"></section>
+  <section class="view" id="v-fav"></section>
+  <section class="view" id="v-seg"></section>
+  <section class="view" id="v-emg"></section>
+</main>
+
+<nav>
+  <button class="on" data-v="drg"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v5L5 18a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-10V3"/><path d="M7 14h10"/></svg>Drogas</button>
+  <button data-v="sets"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="5" rx="1"/><rect x="3" y="12" width="18" height="8" rx="1"/></svg>Sets</button>
+  <button data-v="fav"><svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.5 6 .9-4.3 4.2 1 6L12 17.8 6.6 19.6l1-6L3.3 9.4l6-.9z"/></svg>Favoritos</button>
+  <button data-v="seg"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Segurança</button>
+  <button data-v="emg"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Emergência</button>
+</nav>
+
+<div class="modal" id="mW"><div class="sheet">
+  <h3>Peso do paciente</h3>
+  <input type="text" id="mWin" inputmode="decimal" step="any" style="font-size:26px;text-align:center;font-weight:800;padding:16px">
+  <div class="grid2" style="margin-top:12px">
+    <button class="btn" id="mWc">Cancelar</button>
+    <button class="btn p" id="mWo">Salvar</button>
+  </div>
+</div></div>
+
+<script>
+/* ================================================================
+   ANESTEX — 100% offline, sem login, sem rede.
+   Base de drogas em português, modelo de cálculo estilo InfusiCalc.
+   inf:{lo,hi,u, cM,cV,cU}  dose lo-hi em u; diluição padrão cM (cU) em cV mL
+   bol:{lo,hi,u,cap}  u: mg/kg|mcg/kg|mg|mcg|U/kg|U ; cap = teto absoluto
+   ================================================================ */
+var CATS = ['Anestesia','Analgésicos','Inotrópicos','Vasodilatadores','Antiarrítmicos',
+  'Anti-hipertensivos','Relaxantes musculares','Antieméticos','Respiratório',
+  'Anticoagulantes','Antibióticos','Diversos'];
+
+var DB = [
+/* ---------------- ANESTESIA ---------------- */
+{n:'Propofol',en:'Propofol',cat:'Anestesia',amp:'1% (10 mg/mL) · 2% (20 mg/mL)',
+ inf:{lo:1,hi:12,u:'mg/kg/h',cM:1000,cV:100,cU:'mg'},bol:{lo:1.5,hi:2.5,u:'mg/kg'},
+ note:'Manutenção TIVA 4–12 mg/kg/h (100–200 mcg/kg/min) com opioide. Sedação 1–4 mg/kg/h. Indução 1,5–2,5 mg/kg (peso magro); reduzir 25–50% em idoso/hipovolêmico.\nSíndrome da infusão do propofol se >4 mg/kg/h por >48 h: acidose, rabdomiólise, hipertrigliceridemia. Emulsão lipídica 1,1 kcal/mL, trocar equipo em 12 h.'},
+{n:'Remifentanil',en:'Remifentanil',cat:'Anestesia',amp:'Pó 2 mg / 5 mg → diluir',
+ inf:{lo:0.05,hi:2,u:'mcg/kg/min',cM:2000,cV:40,cU:'mcg'},bol:{lo:0.5,hi:1,u:'mcg/kg'},
+ note:'Manutenção 0,1–0,3 mcg/kg/min. Meia-vida contexto-sensível constante (~3–5 min). Dosar por peso magro. Planejar analgesia de resgate ANTES de desligar — dor intensa na SRPA. Bolus rápido: rigidez torácica e bradicardia.'},
+{n:'Dexmedetomidina',en:'Dexmedetomidine',cat:'Anestesia',amp:'100 mcg/mL (200 mcg/2 mL)',
+ inf:{lo:0.2,hi:1.4,u:'mcg/kg/h',cM:200,cV:50,cU:'mcg'},bol:{lo:0.5,hi:1,u:'mcg/kg'},
+ note:'Manutenção 0,2–0,7 mcg/kg/h. Ataque 1 mcg/kg em 10 min (opcional; causa bradicardia/hipertensão transitória). Em idoso, iniciar direto na manutenção. Sedação cooperativa sem depressão respiratória; poupa opioide, previne delirium.'},
+{n:'Midazolam',en:'Midazolam (IV)',cat:'Anestesia',amp:'5 mg/mL · 1 mg/mL',
+ inf:{lo:0.01,hi:0.2,u:'mg/kg/h',cM:50,cV:50,cU:'mg'},bol:{lo:0.02,hi:0.05,u:'mg/kg',cap:5},
+ note:'Sedação 0,02–0,1 mg/kg/h. Acúmulo em infusão prolongada (metabólito ativo, pior na DRC) — interrupção diária. Em choque, mesma dose dá muito mais efeito. Reduzir 50–75% com opioide.'},
+{n:'Midazolam VO',en:'Midazolam (PO)',cat:'Anestesia',amp:'Xarope/solução',
+ bol:{lo:0.25,hi:0.5,u:'mg/kg',cap:20},
+ note:'Pré-anestésico pediátrico: 0,25–0,5 mg/kg VO (máx 20 mg), 20–30 min antes. Início ~15 min.'},
+{n:'Cetamina',en:'Ketamine',cat:'Anestesia',amp:'50 mg/mL · S(+) 25/50 mg/mL',
+ inf:{lo:0.05,hi:3,u:'mg/kg/h',cM:500,cV:100,cU:'mg'},bol:{lo:1,hi:2,u:'mg/kg'},
+ note:'Analgesia subanestésica 0,1–0,3 mg/kg/h: poupa opioide, previne hiperalgesia. Sedação/anestesia 0,5–2 mg/kg/h. Indução 1–2 mg/kg EV, 4–6 mg/kg IM. Preserva drive respiratório, broncodilata. Psicomimético: atenuar com benzo/alfa-2.'},
+{n:'Alfentanil',en:'Alfentanil',cat:'Anestesia',amp:'500 mcg/mL',
+ inf:{lo:0.5,hi:2,u:'mcg/kg/min',cM:5000,cV:10,cU:'mcg'},bol:{lo:10,hi:20,u:'mcg/kg'},
+ note:'Início 60–90 s — o mais rápido dos fentanílicos. Bolus 10–20 mcg/kg; manutenção 0,5–2 mcg/kg/min. Usar pura (500 mcg/mL) — diluída, o volume infundido fica alto demais. Útil em procedimentos curtos e intensos.'},
+{n:'Sufentanil',en:'Sufentanil',cat:'Anestesia',amp:'50 mcg/mL → diluir 5 mcg/mL',
+ inf:{lo:0.05,hi:1.5,u:'mcg/kg/h',cM:250,cV:50,cU:'mcg'},bol:{lo:0.1,hi:0.5,u:'mcg/kg'},
+ note:'~10× o fentanil, estabilidade hemodinâmica e cinética favorável em cirurgia longa. Alta ligação proteica (efeito ampliado em hipoalbuminemia). Peridural 10–25 mcg; raqui 2,5–5 mcg.'},
+{n:'Sugamadex',en:'Sugammadex',cat:'Anestesia',amp:'100 mg/mL',
+ bol:{lo:2,hi:16,u:'mg/kg'},
+ note:'PESO REAL. TOF ≥2: 2 mg/kg. Bloqueio profundo (1–2 PTC): 4 mg/kg. Resgate imediato após rocurônio de intubação: 16 mg/kg. Reverte rocurônio/vecurônio (não cisatracúrio). Interfere com contraceptivo hormonal por 7 dias.'},
+{n:'Neostigmina',en:'Neostigmine',cat:'Anestesia',amp:'0,5 mg/mL',
+ bol:{lo:0.04,hi:0.07,u:'mg/kg',cap:5},
+ note:'Reverter só com TOF-count ≥2. 0,04–0,05 mg/kg (máx 5 mg). SEMPRE com atropina 0,015 mg/kg ou glicopirrolato 0,2 mg por 1 mg de neostigmina. Em bloqueio profundo é ineficaz e pode dar fraqueza paradoxal.'},
+{n:'Flumazenil',en:'Flumazenil',cat:'Anestesia',amp:'0,1 mg/mL',
+ bol:{lo:0.2,hi:0.2,u:'mg',cap:1},
+ note:'0,2 mg a cada minuto até resposta (máx 1 mg; 3 mg/h). Ressedação comum — vigiar. Risco de convulsão em usuário crônico de benzo e em intoxicação por tricíclico.'},
+
+/* ---------------- ANALGÉSICOS / OPIOIDES ---------------- */
+{n:'Fentanil',en:'Fentanyl',cat:'Analgésicos',amp:'50 mcg/mL',
+ inf:{lo:0.2,hi:5,u:'mcg/kg/h',cM:1000,cV:100,cU:'mcg'},bol:{lo:1,hi:3,u:'mcg/kg'},
+ note:'Bolus 1–3 mcg/kg; atenuar laringoscopia 2–3 mcg/kg 3 min antes. Manutenção 0,5–3 mcg/kg/h. Meia-vida contexto-sensível cresce muito com o tempo — acúmulo em infusão longa. Rigidez torácica com bolus rápido.'},
+{n:'Morfina',en:'Morphine',cat:'Analgésicos',amp:'10 mg/mL · 1 mg/mL',
+ inf:{lo:0.5,hi:5,u:'mg/h',cM:50,cV:50,cU:'mg'},bol:{lo:0.05,hi:0.1,u:'mg/kg'},
+ note:'Titular devagar (pico 15–30 min). Metabólito M6G ativo, renal — acúmulo na DRC. Libera histamina. PCA: bolus 1 mg, lockout 6–10 min. Raqui 100–200 mcg (depressão tardia até 24 h); peridural 2–4 mg.'},
+{n:'Morfina (Pediatria)',en:'Morphine (Paeds)',cat:'Analgésicos',amp:'1 mg/mL (diluído)',
+ inf:{lo:10,hi:40,u:'mcg/kg/h',cM:10,cV:50,cU:'mg'},bol:{lo:50,hi:100,u:'mcg/kg'},
+ note:'Bolus 50–100 mcg/kg. Infusão 10–40 mcg/kg/h (neonato: iniciar mais baixo, 5–10). Vigiar apneia; monitorização contínua.'},
+{n:'Tramadol',en:'Tramadol',cat:'Analgésicos',amp:'50 mg/mL',
+ bol:{lo:1,hi:2,u:'mg/kg',cap:100},
+ note:'1–1,5 mg/kg (máx 100 mg/dose, 400 mg/dia). Náusea frequente — antiemético junto. Reduz limiar convulsivo; síndrome serotoninérgica com ISRS/IMAO.'},
+{n:'Oxicodona',en:'Oxycodone',cat:'Analgésicos',amp:'10 mg/mL',
+ bol:{lo:0.05,hi:0.15,u:'mg/kg'},
+ note:'EV 0,05–0,15 mg/kg titulado. Biodisponibilidade oral alta. Menos prurido/liberação de histamina que a morfina.'},
+{n:'Codeína',en:'Codeine',cat:'Analgésicos',amp:'Comprimido/solução VO',
+ bol:{lo:0.5,hi:1,u:'mg/kg',cap:60},
+ note:'0,5–1 mg/kg VO (máx 60 mg). NÃO usar EV (hipotensão). Pró-fármaco dependente de CYP2D6 — evitar em criança e amamentação (metabolizadores rápidos). Contraindicada <12 anos e pós-adenotonsilectomia.'},
+{n:'Paracetamol',en:'Paracetamol',cat:'Analgésicos',amp:'10 mg/mL (1 g/100 mL)',
+ bol:{lo:15,hi:20,u:'mg/kg',cap:1000},
+ note:'15 mg/kg EV em 15 min (máx 1 g/dose, 4 g/dia; 3 g em hepatopata/etilista/desnutrido). Se <50 kg, 15 mg/kg. Base da analgesia multimodal.'},
+{n:'Ibuprofeno',en:'Ibuprofen',cat:'Analgésicos',amp:'VO / EV',
+ bol:{lo:2.5,hi:10,u:'mg/kg',cap:400},
+ note:'5–10 mg/kg (máx 400 mg/dose, 40 mg/kg/dia). Evitar em DRC, hipovolemia, sangramento, alergia a AINE. Cautela em asma.'},
+{n:'Naproxeno',en:'Naproxen',cat:'Analgésicos',amp:'VO',
+ bol:{lo:5,hi:10,u:'mg/kg',cap:500},
+ note:'5–7,5 mg/kg (máx 500 mg). AINE de duração longa. Mesmas precauções renais/hemostáticas dos AINEs.'},
+{n:'Indometacina',en:'Indomethacin',cat:'Analgésicos',amp:'VO/retal · EV (PCA neonatal)',
+ bol:{lo:0.5,hi:1,u:'mg/kg',cap:50},
+ note:'AINE potente. Analgesia/anti-inflamatório: 0,5–1 mg/kg (25–50 mg) VO ou retal. Fechamento de canal arterial no neonato é outra indicação e outra dose: 0,1–0,2 mg/kg EV. Nefrotóxico e antiagregante — evitar em DRC, hipovolemia, sangramento e anastomose recente; vigiar diurese e plaquetas no neonato.'},
+
+/* ---------------- INOTRÓPICOS / VASOPRESSORES ---------------- */
+{n:'Noradrenalina',en:'Norepinephrine',cat:'Inotrópicos',amp:'4 mg/4 mL (1 mg/mL)',
+ inf:{lo:0.01,hi:1,u:'mcg/kg/min',cM:4,cV:100,cU:'mg'},
+ note:'Primeira linha em choque séptico/vasoplégico. 0,02–0,5 mcg/kg/min titulado por PAM. Preferir central; em periférico veia calibrosa e vigiar extravasamento (antídoto fentolamina). >0,5 mcg/kg/min: associar vasopressina, reavaliar volemia/cortisol/acidose.'},
+{n:'Adrenalina',en:'Adrenaline',cat:'Inotrópicos',amp:'1 mg/mL (1:1.000)',
+ inf:{lo:0.01,hi:1,u:'mcg/kg/min',cM:4,cV:100,cU:'mg'},bol:{lo:0.5,hi:1,u:'mcg/kg'},
+ note:'Infusão 0,01–0,3 mcg/kg/min (beta baixo, alfa alto). Anafilaxia IM 0,01 mg/kg (máx 0,5 mg). PCR 1 mg. Bolus EV hipotensão grave 10–100 mcg. Vigiar taqui, isquemia, hiperlactatemia (efeito beta-2).'},
+{n:'Adrenalina — anafilaxia (BIC)',en:'Adrenaline — anaphylaxis infusion',cat:'Inotrópicos',amp:'1 mg/mL (1:1.000) → diluir',
+ inf:{lo:0.05,hi:0.3,u:'mcg/kg/min',cM:4,cV:100,cU:'mg'},
+ note:'INFUSÃO EM BOMBA na anafilaxia refratária — depois de já ter dado adrenalina IM.\n\nFaixa: 0,05 a 0,3 mcg/kg/min, titulada pela pressão e pela ventilação. Iniciar na mínima e subir a cada 2–3 min enquanto houver hipotensão ou broncoespasmo. Sem teto rígido: em choque refratário pode passar de 0,3 — o limite é o efeito, não o número.\n\nAntes da bomba: adrenalina IM 0,5 mg na face lateral da coxa (criança 0,01 mg/kg, máx 0,5), repetida a cada 5–10 min. Se houver colapso, bolus EV de 10–100 mcg titulado enquanto a bomba é montada.\n\nVolume é tão decisivo quanto a droga: 20 mL/kg de cristaloide em bolus, repetido — a vasoplegia da anafilaxia é intensa e a adrenalina sozinha não sustenta.\n\nRefratária apesar da infusão: vasopressina 1–2 U, glucagon 1–5 mg se o paciente usa betabloqueador, azul de metileno 1,5–2 mg/kg. Suspender o agente suspeito (BNM, látex, antibiótico, clorexidina, contraste, coloide). Triptase em 1 h, 4 h e basal 24 h.'},
+{n:'Dobutamina',en:'Dobutamine',cat:'Inotrópicos',amp:'250 mg/20 mL (12,5 mg/mL)',
+ inf:{lo:2.5,hi:20,u:'mcg/kg/min',cM:250,cV:250,cU:'mg'},
+ note:'2,5–10 mcg/kg/min. Beta-1+beta-2: aumenta débito, reduz RVS — pode derrubar PAM em hipovolêmico. Choque cardiogênico/baixo débito. Tolerância em 48–72 h. Arritmogênica.'},
+{n:'Dopamina',en:'Dopamine',cat:'Inotrópicos',amp:'50 mg/10 mL (5 mg/mL)',
+ inf:{lo:1,hi:20,u:'mcg/kg/min',cM:250,cV:250,cU:'mg'},
+ note:'Dopaminérgico <3, beta-1 3–10, alfa >10 mcg/kg/min. Perdeu espaço para nora (mais arritmia, pior mortalidade no choque cardiogênico). "Dose renal" desacreditada. Só em bradicardia sem marcapasso.'},
+{n:'Fenilefrina',en:'Phenylephrine',cat:'Inotrópicos',amp:'10 mg/mL',
+ inf:{lo:0.05,hi:1.5,u:'mcg/kg/min',cM:10,cV:100,cU:'mg'},bol:{lo:1,hi:3,u:'mcg/kg'},
+ note:'Alfa-1 puro. Infusão 0,1–1 mcg/kg/min; bolus 50–200 mcg. Escolha em raqui de cesárea (melhor pH fetal que efedrina) e em estenose aórtica/CMH/coronariopatia. Bradicardia reflexa; reduz débito.'},
+{n:'Efedrina',en:'Ephedrine',cat:'Inotrópicos',amp:'50 mg/mL → diluir 5 mg/mL',
+ bol:{lo:0.05,hi:0.15,u:'mg/kg'},
+ note:'Bolus 5–10 mg. Ação mista indireta: taquifilaxia; resposta reduzida em depleção de catecolaminas. Atravessa placenta, reduz pH fetal mais que fenilefrina.'},
+{n:'Metaraminol',en:'Metaraminol',cat:'Inotrópicos',amp:'10 mg/mL → diluir 0,5 mg/mL',
+ inf:{lo:0.1,hi:1,u:'mcg/kg/min',cM:10,cV:20,cU:'mg'},bol:{lo:0.5,hi:2,u:'mg'},
+ note:'Bolus 0,5–2 mg. Alfa predominante com componente inotrópico indireto. Alternativa à fenilefrina para hipotensão perioperatória.'},
+{n:'Milrinona',en:'Milrinone',cat:'Inotrópicos',amp:'20 mg/20 mL (1 mg/mL)',
+ inf:{lo:0.125,hi:0.75,u:'mcg/kg/min',cM:20,cV:100,cU:'mg'},
+ note:'0,25–0,5 mcg/kg/min. Inibidor de PDE-3: inotropismo/lusitropismo independentes de beta — útil sob betabloqueador e em disfunção de VD/HP. Vasodilata (pode exigir vasopressor). Meia-vida longa, renal — reduzir na DRC. Ataque 50 mcg/kg geralmente omitido.'},
+{n:'Anrinona',en:'Amrinone',cat:'Inotrópicos',amp:'5 mg/mL',
+ inf:{lo:5,hi:20,u:'mcg/kg/min',cM:100,cV:100,cU:'mg'},bol:{lo:0.75,hi:0.75,u:'mg/kg'},
+ note:'Inibidor de PDE-3 mais antigo. Ataque 0,75 mg/kg, manutenção 5–10 mcg/kg/min. Trombocitopenia dose-dependente. Preterido pela milrinona.'},
+{n:'Isoprenalina',en:'Isoproterenol',cat:'Inotrópicos',amp:'0,2 mg/mL',
+ inf:{lo:0.01,hi:0.3,u:'mcg/kg/min',cM:2,cV:100,cU:'mg'},
+ note:'Beta puro. Bradicardia/BAV refratário como ponte para marcapasso, torsades, transplante cardíaco (coração denervado). Muito arritmogênico e aumenta consumo de O2.'},
+{n:'Vasopressina',en:'Vasopressin',cat:'Inotrópicos',amp:'20 U/mL',
+ inf:{lo:0.01,hi:0.06,u:'U/min',cM:20,cV:100,cU:'U'},
+ note:'Dose FIXA (não por peso): 0,01–0,04 U/min. Poupador de catecolamina no choque séptico; vasoplegia pós-CEC; mantém efeito com acidose. >0,04 U/min: isquemia digital/mesentérica sem ganho.'},
+
+/* ---------------- VASODILATADORES ---------------- */
+{n:'Nitroprussiato de sódio',en:'Sodium Nitroprusside',cat:'Vasodilatadores',amp:'50 mg/2 mL',
+ inf:{lo:0.1,hi:10,u:'mcg/kg/min',cM:50,cV:250,cU:'mg'},
+ note:'PROTEGER DA LUZ. 0,3–2 mcg/kg/min. Início/fim em segundos — hipotensão controlada, emergência hipertensiva. Cianeto: evitar >2 mcg/kg/min por >30 min; suspeitar com acidose + lactato + SvO2 alta. Antídoto hidroxocobalamina/tiossulfato. Diluir só em SG5%.'},
+{n:'Nitroglicerina',en:'Glyceryl Trinitrate',cat:'Vasodilatadores',amp:'5 mg/mL (25/50 mg)',
+ inf:{lo:5,hi:400,u:'mcg/min',cM:50,cV:250,cU:'mg'},
+ note:'10–100 mcg/min. Venodilatador — reduz pré-carga/congestão/consumo de O2. Preferida na isquemia. Taquifilaxia 24–48 h. Contraindicada com inibidor de PDE-5 recente, tamponamento, estenose aórtica grave. Adsorve em PVC.'},
+{n:'Hidralazina',en:'Hydralazine',cat:'Vasodilatadores',amp:'20 mg/mL',
+ bol:{lo:0.1,hi:0.2,u:'mg/kg',cap:20},
+ note:'Bolus 5–10 mg, repetir a cada 20–30 min. Início lento (10–20 min), efeito prolongado e imprevisível — não empilhar. Taquicardia reflexa. Útil em pré-eclâmpsia.'},
+{n:'Nimodipina',en:'Nimodipine',cat:'Vasodilatadores',amp:'0,2 mg/mL',
+ inf:{lo:0.5,hi:2,u:'mg/h',cM:10,cV:50,cU:'mg'},
+ note:'Vasoespasmo na HSA: 1–2 mg/h EV (ou 60 mg VO 4/4 h por 21 dias). Bloqueador de canal de cálcio neuroprotetor. Vigiar hipotensão — reduzir dose, não suspender.'},
+{n:'Anlodipino',en:'Amlodipine',cat:'Vasodilatadores',amp:'Comprimido VO',
+ bol:{lo:0.05,hi:0.1,u:'mg/kg',cap:10},
+ note:'VO 2,5–10 mg/dia (criança 0,05–0,1 mg/kg/dia). Bloqueador de canal de cálcio de ação longa. Edema periférico dose-dependente. Não é droga aguda.'},
+
+/* ---------------- ANTIARRÍTMICOS ---------------- */
+{n:'Amiodarona',en:'Amiodarone',cat:'Antiarrítmicos',amp:'150 mg/3 mL (50 mg/mL)',
+ inf:{lo:0.5,hi:1.5,u:'mg/min',cM:900,cV:500,cU:'mg'},bol:{lo:5,hi:5,u:'mg/kg'},
+ note:'Ataque 150 mg em 10 min → 1 mg/min por 6 h → 0,5 mg/min por 18 h (máx 2,2 g/24 h). PCR FV/TV: 300 mg → 150 mg. Diluir SEMPRE em SG5%. Flebite em periférica. Bolus rápido: hipotensão (solvente).'},
+{n:'Adenosina',en:'Adenosine',cat:'Antiarrítmicos',amp:'3 mg/mL',
+ bol:{lo:6,hi:6,u:'mg',cap:18},
+ note:'TSV: 6 mg EV rápido em bolus + flush, depois 12 mg, depois 12 mg. Criança 0,1 mg/kg → 0,2 mg/kg. Via central ou proximal, o mais rápido possível. Assistolia transitória esperada. Reduzir com dipiridamol/carbamazepina; dobrar com teofilina.'},
+{n:'Digoxina',en:'Digoxin',cat:'Antiarrítmicos',amp:'0,25 mg/mL',
+ bol:{lo:10,hi:15,u:'mcg/kg'},
+ note:'Digitalização EV 10–15 mcg/kg em doses divididas. Controle de FC na FA (fraco no esforço). Janela terapêutica estreita; toxicidade aumenta com hipocalemia/hipomagnesemia/DRC. Antídoto: anticorpo antidigoxina.'},
+{n:'Sotalol',en:'Sotalol (IV)',cat:'Antiarrítmicos',amp:'10 mg/mL',
+ bol:{lo:0.5,hi:1.5,u:'mg/kg'},
+ note:'EV 0,5–1,5 mg/kg lento. Betabloqueador com efeito classe III. Prolonga QT — risco de torsades; monitorizar QT e potássio. Evitar em DRC.'},
+{n:'Lidocaína',en:'Lignocaine',cat:'Antiarrítmicos',amp:'2% (20 mg/mL) sem vaso',
+ inf:{lo:0.5,hi:3,u:'mg/kg/h',cM:1000,cV:100,cU:'mg'},bol:{lo:1,hi:1.5,u:'mg/kg'},
+ note:'Antiarrítmico: 1–1,5 mg/kg bolus → 1–4 mg/min. Analgesia sistêmica: bolus 1,5 mg/kg → 1–2 mg/kg/h (peso ideal), reduz opioide/íleo. Toxicidade: gosto metálico, parestesia perioral, zumbido → convulsão/colapso. Contabilizar na dose total de bloqueio.'},
+{n:'Fenitoína',en:'Phenytoin',cat:'Antiarrítmicos',amp:'50 mg/mL',
+ bol:{lo:15,hi:20,u:'mg/kg'},
+ note:'Estado de mal: 15–20 mg/kg EV a ≤50 mg/min (≤25 em idoso/cardiopata) — hipotensão e arritmia com infusão rápida, monitorização. Extravasamento: síndrome da luva púrpura. Precipita em soro glicosado (usar SF).'},
+
+/* ---------------- ANTI-HIPERTENSIVOS ---------------- */
+{n:'Esmolol',en:'Esmolol',cat:'Anti-hipertensivos',amp:'100 mg/10 mL (10 mg/mL)',
+ inf:{lo:25,hi:300,u:'mcg/kg/min',cM:2500,cV:250,cU:'mg'},bol:{lo:0.5,hi:0.5,u:'mg/kg'},
+ note:'50–200 mcg/kg/min. Ataque opcional 0,5 mg/kg em 1 min. Beta-1 ultracurto (meia-vida 9 min) — o mais seguro para titular. Resposta à laringoscopia, TSV, dissecção de aorta (antes do vasodilatador). Evitar em broncoespasmo/BAV/ICC.'},
+{n:'Labetalol',en:'Labetolol',cat:'Anti-hipertensivos',amp:'5 mg/mL',
+ inf:{lo:0.5,hi:2,u:'mg/min',cM:100,cV:100,cU:'mg'},bol:{lo:0.25,hi:0.5,u:'mg/kg'},
+ note:'Bolus 5–20 mg, repetir; infusão 0,5–2 mg/min. Alfa+beta (1:7 EV). Emergência hipertensiva, pré-eclâmpsia, dissecção. Evitar em asma/ICC/bradicardia. Não causa taquicardia reflexa.'},
+{n:'Atenolol',en:'Atenolol',cat:'Anti-hipertensivos',amp:'Comprimido VO',
+ bol:{lo:0.5,hi:1,u:'mg/kg',cap:100},
+ note:'VO 25–100 mg/dia (máx 100 mg). Beta-1 seletivo de eliminação renal. Controle crônico de FC/PA. Não é droga aguda perioperatória.'},
+{n:'Bisoprolol',en:'Bisoprolol',cat:'Anti-hipertensivos',amp:'Comprimido VO',
+ bol:{lo:0.05,hi:0.1,u:'mg/kg',cap:10},
+ note:'VO 2,5–10 mg/dia. Beta-1 seletivo, usado em ICC e controle de FC. Manter no perioperatório de quem já usa (não suspender betabloqueador).'},
+
+/* ---------------- RELAXANTES MUSCULARES ---------------- */
+{n:'Rocurônio',en:'Rocuronium',cat:'Relaxantes musculares',amp:'10 mg/mL',
+ inf:{lo:3,hi:15,u:'mcg/kg/min',cM:500,cV:100,cU:'mg'},bol:{lo:0.6,hi:0.6,u:'mg/kg'},
+ note:'Intubação 0,6 mg/kg; sequência rápida 1,0–1,2 mg/kg (60 s). Manutenção 5–12 mcg/kg/min. PESO IDEAL. Eliminação hepatobiliar. Monitorizar TOF. Revertível por sugamadex em qualquer profundidade.'},
+{n:'Cisatracúrio',en:'Cisatracurium',cat:'Relaxantes musculares',amp:'2 mg/mL · 5 mg/mL',
+ inf:{lo:1,hi:3,u:'mcg/kg/min',cM:100,cV:100,cU:'mg'},bol:{lo:0.15,hi:0.2,u:'mg/kg'},
+ note:'Intubação 0,15 mg/kg; manutenção 1–3 mcg/kg/min. Eliminação de Hofmann (independe de fígado/rim) — escolha em falência múltipla de órgãos. Não libera histamina. NÃO revertido por sugamadex.'},
+{n:'Atracúrio',en:'Atracurium',cat:'Relaxantes musculares',amp:'10 mg/mL',
+ inf:{lo:4,hi:12,u:'mcg/kg/min',cM:500,cV:100,cU:'mg'},bol:{lo:0.5,hi:0.6,u:'mg/kg'},
+ note:'Intubação 0,5 mg/kg; manutenção 5–10 mcg/kg/min. Hofmann + hidrólise por esterases. Libera histamina em bolus rápido (hipotensão, broncoespasmo) — injetar devagar. Metabólito laudanosina em infusão longa.'},
+{n:'Mivacúrio',en:'Mivacurium',cat:'Relaxantes musculares',amp:'2 mg/mL',
+ inf:{lo:3,hi:15,u:'mcg/kg/min',cM:20,cV:10,cU:'mg'},bol:{lo:0.15,hi:0.2,u:'mg/kg'},
+ note:'Ação curta. Metabolizado pela colinesterase plasmática — bloqueio prolongado se atividade baixa (deficiência/gestação/inibidores). Libera histamina. Manutenção 3–15 mcg/kg/min.'},
+{n:'Vecurônio',en:'Vecuronium',cat:'Relaxantes musculares',amp:'Pó 10 mg → reconstituir',
+ inf:{lo:0.8,hi:1.3,u:'mcg/kg/min',cM:20,cV:20,cU:'mg'},bol:{lo:0.08,hi:0.1,u:'mg/kg'},
+ note:'Intubação 0,08–0,1 mg/kg; manutenção 0,8–1,2 mcg/kg/min. Sem efeito cardiovascular. Eliminação hepática/renal — acúmulo na disfunção. Revertível por sugamadex.'},
+{n:'Succinilcolina',en:'Suxamethonium (IV)',cat:'Relaxantes musculares',amp:'50 mg/mL',
+ bol:{lo:1,hi:2,u:'mg/kg'},
+ note:'Sequência rápida 1–2 mg/kg (1–1,5 costuma bastar; 1,5–2 dá condições mais confiáveis). Início 45–60 s, duração 5–10 min. Contraindicada em queimadura >24 h, lesão medular/denervação, rabdomiólise, hipercalemia, HM. Bradicardia (criança, 2ª dose) — atropina. Fasciculações, mialgia, ↑PIO/PIC.'},
+{n:'Succinilcolina IM',en:'Suxamethonium (IM)',cat:'Relaxantes musculares',amp:'50 mg/mL',
+ bol:{lo:3,hi:4,u:'mg/kg',cap:150},
+ note:'Sem acesso venoso (laringoespasmo em criança): 4 mg/kg IM (máx 150 mg). Início mais lento (~3 min). Mesmas contraindicações da via EV; atropina junto.'},
+
+/* ---------------- ANTIEMÉTICOS ---------------- */
+{n:'Ondansetrona',en:'Ondansetron',cat:'Antieméticos',amp:'2 mg/mL',
+ bol:{lo:0.05,hi:0.15,u:'mg/kg',cap:8},
+ note:'4–8 mg ao fim da cirurgia (criança 0,1 mg/kg, máx 4 mg). Antagonista 5-HT3. Prolonga QT — cuidado com metadona/haloperidol/distúrbio eletrolítico.'},
+{n:'Dexametasona',en:'Dexamethasone',cat:'Antieméticos',amp:'4 mg/mL',
+ bol:{lo:0.1,hi:0.15,u:'mg/kg',cap:8},
+ note:'Antiemético 4–8 mg na indução (efeito em ~2 h). Ardor perineal se acordado. Hiperglicemia transitória. Também reduz dor e edema de via aérea.'},
+{n:'Droperidol',en:'Droperidol',cat:'Antieméticos',amp:'2,5 mg/mL',
+ bol:{lo:0.01,hi:0.02,u:'mg/kg',cap:1.25},
+ note:'0,625–1,25 mg. Antagonista D2 potente para NVPO. Prolonga QT (alerta de caixa-preta) — ECG se fatores de risco. Pode causar acatisia/sedação.'},
+{n:'Granisetrona',en:'Granisetron',cat:'Antieméticos',amp:'1 mg/mL',
+ bol:{lo:0.01,hi:0.04,u:'mg/kg',cap:3},
+ note:'1 mg (ou 0,01–0,04 mg/kg) EV. 5-HT3 de duração mais longa que ondansetrona. Menor efeito no QT.'},
+{n:'Tropisetrona',en:'Tropisetron',cat:'Antieméticos',amp:'1 mg/mL',
+ bol:{lo:0.05,hi:0.1,u:'mg/kg',cap:5},
+ note:'2–5 mg EV (0,05–0,1 mg/kg). 5-HT3 de ação longa, cobre 24 h. Alternativa à ondansetrona.'},
+{n:'Prometazina',en:'Promethazine',cat:'Antieméticos',amp:'25 mg/mL',
+ bol:{lo:0.2,hi:0.5,u:'mg/kg',cap:25},
+ note:'0,2–0,5 mg/kg (12,5–25 mg) EV lenta e diluída — extravasamento/arterial causa necrose grave. Anti-histamínico sedativo. Evitar <2 anos (depressão respiratória). Efeitos extrapiramidais.'},
+
+/* ---------------- RESPIRATÓRIO ---------------- */
+{n:'Salbutamol',en:'Salbutamol',cat:'Respiratório',amp:'1 mg/mL (EV) · spray 100 mcg',
+ inf:{lo:0.1,hi:1,u:'mcg/kg/min',cM:5,cV:50,cU:'mg'},bol:{lo:4,hi:8,u:'mcg/kg'},
+ note:'Broncoespasmo grave: 8–10 jatos no circuito, ou EV bolus 4–8 mcg/kg → infusão 0,1–1 mcg/kg/min. Vigiar taquicardia, tremor, hipocalemia, hiperlactatemia. Também trata hipercalemia (nebulizado).'},
+{n:'Aminofilina',en:'Aminophylline',cat:'Respiratório',amp:'25 mg/mL',
+ inf:{lo:0.3,hi:0.7,u:'mg/kg/h',cM:250,cV:100,cU:'mg'},bol:{lo:5,hi:5,u:'mg/kg'},
+ note:'Ataque 5 mg/kg em 20 min (omitir se já usa teofilina) → 0,3–0,7 mg/kg/h. Janela estreita: náusea, taquiarritmia, convulsão. Reduzir em ICC/hepatopatia/idoso e com cimetidina/macrolídeo.'},
+
+/* ---------------- ANTICOAGULANTES ---------------- */
+{n:'Heparina',en:'Heparin',cat:'Anticoagulantes',amp:'5.000 UI/mL',
+ inf:{lo:5,hi:30,u:'U/kg/h',cM:25000,cV:250,cU:'U'},bol:{lo:60,hi:80,u:'U/kg'},
+ note:'Ataque 60–80 U/kg (máx 5.000) → 12–18 U/kg/h, ajustada por TTPa (1,5–2,5×) ou anti-Xa 6/6 h. Antídoto protamina 1 mg/100 U (infusão lenta). Vigiar HIT (5º–10º dia).'},
+{n:'Abciximabe',en:'Abciximab (ReoPro)',cat:'Anticoagulantes',amp:'2 mg/mL',
+ inf:{lo:0.125,hi:0.125,u:'mcg/kg/min',cM:9,cV:250,cU:'mg'},bol:{lo:250,hi:250,u:'mcg/kg'},
+ note:'Inibidor GP IIb/IIIa (ICP): bolus 0,25 mg/kg → 0,125 mcg/kg/min (máx 10 mcg/min) por 12 h. Sangramento e trombocitopenia agudos — checar plaquetas em 2–4 h.'},
+{n:'Fator VIIa',en:'rVIIa (NovoSeven)',cat:'Anticoagulantes',amp:'Pó → reconstituir',
+ bol:{lo:90,hi:120,u:'mcg/kg'},
+ note:'Hemofilia com inibidor: 90–120 mcg/kg a cada 2–3 h. Uso off-label em hemorragia refratária é controverso (risco trombótico) — só após corrigir fibrinogênio, plaquetas, cálcio, pH e temperatura.'},
+{n:'Ácido tranexâmico',en:'Tranexamic acid',cat:'Anticoagulantes',amp:'50 mg/mL',
+ inf:{lo:0.5,hi:4,u:'mg/kg/h',cM:1000,cV:100,cU:'mg'},bol:{lo:10,hi:20,u:'mg/kg'},
+ note:'Ataque 10–20 mg/kg (ou 1 g) em 10 min → 1–2 mg/kg/h. Trauma: 1 g em 10 min nas 1as 3 h + 1 g em 8 h. NUNCA por via neuroaxial (fatal). Convulsão dose-dependente em doses altas.'},
+
+/* ---------------- ANTIBIÓTICOS ---------------- */
+{n:'Cefazolina',en:'Cefazolin',cat:'Antibióticos',amp:'Pó 1 g',
+ bol:{lo:25,hi:30,u:'mg/kg',cap:2000},
+ note:'Profilaxia cirúrgica padrão: 2 g EV (3 g se ≥120 kg) 30–60 min antes da incisão; repetir se cirurgia >4 h ou perda >1,5 L. Criança 25–30 mg/kg.'},
+{n:'Amoxicilina',en:'Amoxycillin',cat:'Antibióticos',amp:'Pó / VO',
+ bol:{lo:25,hi:50,u:'mg/kg',cap:2000},
+ note:'25–50 mg/kg. Profilaxia de endocardite: 50 mg/kg VO (máx 2 g) 1 h antes. Ajustar na DRC.'},
+{n:'Ampicilina',en:'Ampicillin',cat:'Antibióticos',amp:'Pó 1 g',
+ bol:{lo:25,hi:50,u:'mg/kg',cap:2000},
+ note:'25–50 mg/kg EV. Profilaxia de EGB no parto. Cobertura de enterococo. Ajustar na DRC.'},
+{n:'Cefotaxima',en:'Cefotaxime',cat:'Antibióticos',amp:'Pó 1 g',
+ bol:{lo:25,hi:50,u:'mg/kg',cap:2000},
+ note:'Cefalosporina de 3ª geração: 1–2 g EV 8/8 h (criança 25–50 mg/kg/dose). Boa penetração no SNC.'},
+{n:'Cefotetan',en:'Cefotetan',cat:'Antibióticos',amp:'Pó 1 g',
+ bol:{lo:25,hi:50,u:'mg/kg',cap:2000},
+ note:'Cefalosporina de 2ª geração com cobertura anaeróbia — profilaxia colorretal/ginecológica: 1–2 g EV. Efeito dissulfiram-símile com álcool; pode prolongar TP.'},
+{n:'Cefalexina',en:'Cephalexin',cat:'Antibióticos',amp:'VO',
+ bol:{lo:12.5,hi:25,u:'mg/kg',cap:1000},
+ note:'VO 500 mg–1 g 6/6 h (criança 12,5–25 mg/kg/dose). Cobertura de pele/partes moles.'},
+{n:'Cefalotina',en:'Cephalothin',cat:'Antibióticos',amp:'Pó 1 g',
+ bol:{lo:15,hi:25,u:'mg/kg',cap:2000},
+ note:'Cefalosporina de 1ª geração EV: 1–2 g. Meia-vida curta — reposição intraoperatória frequente.'},
+{n:'Ciprofloxacino',en:'Ciprofloxacin',cat:'Antibióticos',amp:'2 mg/mL EV',
+ bol:{lo:10,hi:15,u:'mg/kg',cap:400},
+ note:'400 mg EV 12/12 h (criança 10 mg/kg). Infundir em 60 min. Prolonga QT; tendinopatia; interage com tizanidina/teofilina.'},
+{n:'Clindamicina',en:'Clindamycin',cat:'Antibióticos',amp:'150 mg/mL',
+ bol:{lo:10,hi:13,u:'mg/kg',cap:900},
+ note:'600–900 mg EV 8/8 h. Alternativa em alérgico a beta-lactâmico. Anaeróbios; antitoxina no choque estreptocócico. Infundir em 30 min (hipotensão se rápido). Colite por C. difficile.'},
+{n:'Eritromicina',en:'Erythromycin',cat:'Antibióticos',amp:'EV',
+ bol:{lo:7.5,hi:12.5,u:'mg/kg',cap:1000},
+ note:'Também procinético (250 mg EV). Prolonga QT; inibidor de CYP3A4 forte. Flebite — diluir bem, infusão lenta.'},
+{n:'Gentamicina',en:'Gentamicin',cat:'Antibióticos',amp:'40 mg/mL',
+ bol:{lo:5,hi:7,u:'mg/kg',cap:640},
+ note:'Dose única diária 5–7 mg/kg (peso ideal). Nefro/ototóxico — dosar nível-vale; potencializa bloqueio neuromuscular. Ajustar na DRC.'},
+{n:'Flucloxacilina',en:'Flucloxacillin',cat:'Antibióticos',amp:'Pó 1 g',
+ bol:{lo:25,hi:50,u:'mg/kg',cap:2000},
+ note:'Antiestafilocócica: 1–2 g EV 6/6 h. Hepatotoxicidade colestática (tardia). Usada em profilaxia ortopédica onde disponível.'},
+{n:'Dicloxacilina',en:'Dicloxacillin',cat:'Antibióticos',amp:'VO',
+ bol:{lo:12.5,hi:25,u:'mg/kg',cap:500},
+ note:'VO 250–500 mg 6/6 h. Penicilina antiestafilocócica resistente à penicilinase. Tomar em jejum.'},
+{n:'Imipenem',en:'Imipenem',cat:'Antibióticos',amp:'Pó 500 mg',
+ bol:{lo:15,hi:25,u:'mg/kg',cap:1000},
+ note:'500 mg–1 g EV 6/6 h. Carbapenêmico de amplo espectro. Reduz limiar convulsivo (mais que meropenem) — cuidado em nefropata/SNC. Ajustar na DRC.'},
+{n:'Meropenem',en:'Meropenem',cat:'Antibióticos',amp:'Pó 500 mg/1 g',
+ bol:{lo:20,hi:40,u:'mg/kg',cap:2000},
+ note:'1–2 g EV 8/8 h (meningite 2 g). Amplo espectro; menos convulsivo que imipenem. Infusão estendida em 3 h melhora farmacodinâmica. Ajustar na DRC.'},
+{n:'Metronidazol',en:'Metronidazole',cat:'Antibióticos',amp:'5 mg/mL',
+ bol:{lo:7.5,hi:15,u:'mg/kg',cap:500},
+ note:'500 mg EV 8/8 h. Anaeróbios e protozoários. Efeito dissulfiram com álcool; neuropatia em uso prolongado; sabor metálico.'},
+{n:'Penicilina G',en:'Penicillin G',cat:'Antibióticos',amp:'Pó (UI)',
+ bol:{lo:25000,hi:50000,u:'U/kg'},
+ note:'Cristalina 12–24 milhões UI/dia divididas. EGB no parto: 5 milhões UI → 2,5–3 milhões 4/4 h. Rica em potássio/sódio em dose alta.'},
+{n:'Vancomicina',en:'Vancomycin',cat:'Antibióticos',amp:'Pó → diluir ≤5 mg/mL',
+ bol:{lo:15,hi:20,u:'mg/kg',cap:2000},
+ note:'15–20 mg/kg EV, infusão ≥60 min (≤10 mg/min) — síndrome do homem vermelho se rápido. Nível-vale/AUC. Nefrotóxico (sinérgico com aminoglicosídeo). Ajustar na DRC.'},
+
+/* ---------------- DIVERSOS ---------------- */
+{n:'Atropina',en:'Atropine',cat:'Diversos',amp:'0,25 mg/mL',
+ bol:{lo:0.01,hi:0.02,u:'mg/kg',cap:3},
+ note:'Bradicardia 0,5–1 mg EV, repetir até 3 mg. Criança 0,02 mg/kg (mínimo 0,1 mg — abaixo é bradicardizante). Com neostigmina 0,015 mg/kg.'},
+{n:'Glicopirrolato',en:'Glycopyrrolate',cat:'Diversos',amp:'0,2 mg/mL',
+ bol:{lo:0.005,hi:0.01,u:'mg/kg',cap:0.4},
+ note:'Antissialagogo e antibradicárdico que não cruza a barreira hematoencefálica (sem sedação/confusão). Com neostigmina: 0,2 mg por 1 mg. Bradicardia: 0,2–0,4 mg.'},
+{n:'Hidrocortisona',en:'Hydrocortisone',cat:'Diversos',amp:'Pó 100/500 mg → 50 mg/mL',
+ bol:{lo:2,hi:4,u:'mg/kg',cap:200},
+ note:'Anafilaxia e insuficiência adrenal: 100–200 mg EV (2–4 mg/kg). NÃO é droga de resgate imediato — a adrenalina é; o corticoide age em 4–6 h e serve para reduzir a reação bifásica. Broncoespasmo grave: mesma dose.'},
+{n:'Naloxona',en:'Naloxone',cat:'Diversos',amp:'0,4 mg/mL',
+ inf:{lo:0.25,hi:5,u:'mcg/kg/h',cM:2,cV:100,cU:'mg'},bol:{lo:0.5,hi:2,u:'mcg/kg'},
+ note:'Reverter depressão respiratória: titular 40–80 mcg (diluir 0,4 mg em 10 mL). Meia-vida curta — renarcotização é a regra; manter infusão de 0,25–5 mcg/kg/h. Prurido de opioide neuroaxial: 0,25–1 mcg/kg/h. Reversão abrupta: dor, HAS, edema pulmonar.'},
+{n:'Clonidina',en:'Clonidine (IV)',cat:'Diversos',amp:'150 mcg/mL',
+ bol:{lo:1,hi:2,u:'mcg/kg',cap:150},
+ note:'EV 1–2 mcg/kg em 10 min (bolus rápido: HAS paradoxal). Alfa-2: poupa opioide, trata tremor/abstinência, adjuvante em bloqueio (peridural 75–150 mcg). Bradicardia, hipotensão, sedação, rebote na retirada.'},
+{n:'Insulina',en:'Insulin',cat:'Diversos',amp:'100 U/mL (regular)',
+ inf:{lo:0.5,hi:20,u:'U/h',cM:50,cV:50,cU:'U'},
+ note:'Saturar o equipo antes (adsorve ao plástico). Alvo intraop 140–180 mg/dL. CAD: 0,1 U/kg/h, sem bolus se K<3,3 (repor K antes). Glicemia horária.'},
+{n:'Cloreto de cálcio',en:'Calcium Chloride',cat:'Diversos',amp:'10% (100 mg/mL)',
+ bol:{lo:10,hi:20,u:'mg/kg',cap:1000},
+ note:'10% tem 3× o cálcio elementar do gluconato — via central (esclerosante). Hipercalemia, hipocalcemia (pós-transfusão maciça), intoxicação por BCC/Mg. 10–20 mg/kg lento.'},
+{n:'Gluconato de cálcio',en:'Calcium Gluconate',cat:'Diversos',amp:'10% (100 mg/mL)',
+ bol:{lo:30,hi:60,u:'mg/kg',cap:3000},
+ note:'Preferível em veia periférica (menos esclerosante). Hipercalemia/hipocalcemia: 30–60 mg/kg (1–2 g) lento. Antídoto do sulfato de magnésio.'},
+{n:'Potássio',en:'Potassium',cat:'Diversos',amp:'KCl 19,1% (2,56 mEq/mL)',
+ inf:{lo:5,hi:20,u:'mEq/h',cM:100,cV:1000,cU:'mEq'},
+ note:'NUNCA em bolus (parada). Periférico ≤10 mEq/h e ≤40 mEq/L (dói/flebite); central com monitorização até 20 mEq/h. Repor magnésio junto. Sempre em bomba.'},
+{n:'Sulfato de magnésio',en:'Magnesium Sulfate',cat:'Diversos',amp:'10% (100 mg/mL) · 50%',
+ inf:{lo:5,hi:25,u:'mg/kg/h',cM:10000,cV:100,cU:'mg'},bol:{lo:30,hi:50,u:'mg/kg'},
+ note:'Adjuvante analgésico (NMDA), poupa opioide, potencializa BNM (monitorizar TOF). Ataque 30–50 mg/kg. Eclâmpsia: 4–6 g + 1–2 g/h (reflexo patelar, FR, diurese). Antídoto gluconato de cálcio.'},
+{n:'Ocitocina',en:'Oxytocin',cat:'Diversos',amp:'5 UI/mL',
+ inf:{lo:1,hi:10,u:'U/h',cM:20,cV:500,cU:'U'},
+ note:'Cesárea: bolus lento 1–3 UI (nunca push rápido — hipotensão/taqui/isquemia) → manutenção de 2,5–10 UI/h. Atenção ao VOLUME: 20 UI em 500 mL a 5 UI/h já são 125 mL/h. Efeito antidiurético em dose alta. Atonia refratária: metilergometrina 0,2 mg IM (não em HAS) ou misoprostol 800 mcg retal.'},
+{n:'Dantroleno',en:'Dantrolene',cat:'Diversos',amp:'Pó 20 mg → 60 mL água',
+ bol:{lo:2.5,hi:10,u:'mg/kg'},
+ note:'Hipertermia maligna: 2,5 mg/kg EV rápido, repetir a cada 5–10 min até reverter (pode passar de 10 mg/kg). Manter 1 mg/kg 6/6 h por 24–48 h. NÃO associar a bloqueador de canal de cálcio. Recrutar equipe para diluir (muitos frascos).'},
+{n:'Manitol 20%',en:'Mannitol 20%',cat:'Diversos',amp:'200 mg/mL',
+ bol:{lo:0.25,hi:1,u:'g/kg'},
+ note:'0,25–1 g/kg em 15–30 min. Hipertensão intracraniana, proteção renal, glaucoma. Usar filtro (cristaliza). Vigiar osmolaridade (<320), volemia e potássio. Cuidado em ICC.'},
+{n:'Intralipid 20%',en:'Intralipid 20%',cat:'Diversos',amp:'Emulsão 20%',
+ bol:{lo:1.5,hi:1.5,u:'mL/kg'},
+ note:'Toxicidade por anestésico local (LAST): bolus 1,5 mL/kg em 2–3 min → 0,25 mL/kg/min. Repetir bolus até 2× e dobrar infusão se instável. Máx ~12 mL/kg na 1ª hora. Ver aba Emergência.'},
+{n:'Octreotida',en:'Octreotide',cat:'Diversos',amp:'50/100 mcg/mL',
+ inf:{lo:25,hi:50,u:'mcg/h',cM:1200,cV:100,cU:'mcg'},bol:{lo:0.7,hi:0.7,u:'mcg/kg'},
+ note:'Varizes/hemorragia digestiva: bolus 50 mcg → 25–50 mcg/h. Análogo da somatostatina; também em fístula pancreática e acromegalia. Bradicardia, hiperglicemia.'}
+];
+
+/* ================================================================
+   ANESTÉSICOS LOCAIS + EMERGÊNCIAS
+   ================================================================ */
+var LA = [
+{n:'Lidocaína',sv:4.5,cv:7,capS:300,capC:500,pct:[0.5,1,2]},
+{n:'Bupivacaína',sv:2.5,cv:3,capS:175,capC:225,pct:[0.25,0.5,0.75]},
+{n:'Levobupivacaína',sv:2.5,cv:3,capS:150,capC:200,pct:[0.25,0.5,0.75]},
+{n:'Ropivacaína',sv:3,cv:3.5,capS:200,capC:250,pct:[0.2,0.5,0.75,1]},
+{n:'Mepivacaína',sv:5,cv:7,capS:400,capC:500,pct:[1,2]},
+{n:'Prilocaína',sv:8,cv:8.5,capS:600,capC:600,pct:[0.5,1,2]}
+];
+
+/* ================================================================
+   SETS — combinações de uso frequente
+   ================================================================ */
+var SETS = [
+{n:'TIVA',d:['Propofol','Remifentanil'],obs:'Anestesia venosa total. Iniciar propofol 6–10 mg/kg/h e remifentanil 0,15–0,3 mcg/kg/min; titular por BIS e resposta hemodinâmica. Planejar analgesia de resgate antes de desligar o remifentanil.'},
+{n:'TIVA + adjuvantes',d:['Propofol','Remifentanil','Cetamina','Sulfato de magnésio'],obs:'TIVA poupadora de opioide. Cetamina 0,1–0,3 mg/kg/h e magnésio 10–15 mg/kg/h reduzem consumo de remifentanil e previnem hiperalgesia. Monitorizar TOF (magnésio potencializa BNM).'},
+{n:'Choque séptico',d:['Noradrenalina','Vasopressina','Dobutamina'],obs:'Nora como primeira linha titulada por PAM ≥65. Associar vasopressina 0,03 U/min quando nora ≈0,25–0,5 mcg/kg/min. Dobutamina se débito baixo após volemia corrigida.'},
+{n:'Choque cardiogênico',d:['Noradrenalina','Dobutamina','Milrinona'],obs:'Nora para pressão de perfusão + inotrópico. Milrinona se uso crônico de betabloqueador ou disfunção de VD com hipertensão pulmonar; costuma exigir vasopressor associado.'},
+{n:'Sedação em UTI',d:['Propofol','Dexmedetomidina','Fentanil','Midazolam'],obs:'Meta de sedação leve (RASS −2 a 0) com interrupção diária. Dexmedetomidina reduz delirium. Evitar midazolam prolongado (acúmulo, pior na DRC).'},
+{n:'Cesárea / raquianestesia',d:['Fenilefrina','Ocitocina','Efedrina'],obs:'Fenilefrina em infusão profilática 0,25–0,5 mcg/kg/min reduz náusea e preserva pH fetal. Ocitocina em bolus lento de 1–3 UI após o nascimento, seguido de manutenção.'},
+{n:'Hipotensão controlada',d:['Nitroprussiato de sódio','Esmolol','Nitroglicerina'],obs:'Associar betabloqueador reduz a dose de nitroprussiato e evita taquicardia reflexa. Vigiar dose cumulativa de nitroprussiato (cianeto).'},
+{n:'Emergência hipertensiva',d:['Esmolol','Labetalol','Nitroglicerina','Hidralazina'],obs:'Reduzir PAM em 20–25% na primeira hora (exceto dissecção de aorta, onde a meta é mais agressiva). Na dissecção: betabloqueador ANTES do vasodilatador.'},
+{n:'Anafilaxia',d:['Adrenalina — anafilaxia (BIC)','Adrenalina','Hidrocortisona','Salbutamol','Vasopressina'],obs:'Adrenalina IM 0,5 mg é o primeiro gesto — nunca esperar a bomba. Montar a infusão (0,05–0,3 mcg/kg/min) se houver hipotensão ou broncoespasmo persistentes após 2 doses IM. Volume 20 mL/kg em bolus, repetido. Corticoide e anti-histamínico são adjuvantes tardios, nunca substitutos. Refratária: vasopressina, glucagon se betabloqueado, azul de metileno.'},
+{n:'Broncoespasmo',d:['Salbutamol','Adrenalina','Cetamina','Sulfato de magnésio'],obs:'Aprofundar anestesia, O₂ 100%, salbutamol no circuito. Escalar para adrenalina EV. Cetamina 0,5–1 mg/kg e magnésio 30–50 mg/kg como adjuvantes.'},
+{n:'Bloqueio neuromuscular',d:['Rocurônio','Cisatracúrio','Sugamadex','Neostigmina'],obs:'Monitorização com TOF obrigatória. Rocurônio por peso ideal. Reverter só com TOF-count ≥2 se usar neostigmina; sugamadex reverte rocurônio/vecurônio em qualquer profundidade.'}
+];
+
+/* ================================================================
+   EMERGÊNCIAS (calculadas pelo peso)
+   ================================================================ */
+function D(v,u){ return '<span class="dose">'+fmt(v)+' '+(u||'mg')+'</span>'; }
+var EMG = [
+{t:'⚡ Parada cardiorrespiratória',open:true,f:function(p){return ''+
+ '<p><b>Adrenalina</b> — 1 mg EV a cada 3–5 min (criança 0,01 mg/kg = '+D(Math.min(0.01*p,1))+', teto 1 mg).</p>'+
+ '<p><b>Amiodarona</b> — 300 mg na FV/TV refratária, depois 150 mg (criança 5 mg/kg = '+D(5*p)+').</p>'+
+ '<p><b>Lidocaína</b> (alternativa) — '+D(1.5*p)+' (1–1,5 mg/kg), depois 0,5–0,75 mg/kg.</p>'+
+ '<p><b>Desfibrilação</b> — bifásico 120–200 J (criança 2 J/kg = '+D(2*p,'J')+', depois 4 J/kg = '+D(4*p,'J')+').</p>'+
+ '<p><b>Bicarbonato 8,4%</b> — '+D(p,'mEq')+' (1 mEq/kg) só em hipercalemia, acidose documentada ou tricíclico.</p>'+
+ '<p><b>Gluconato de cálcio 10%</b> — '+D(30*p)+' (30 mg/kg) em hipercalemia, hipocalcemia ou intoxicação por BCC.</p>'+
+ '<p class="mut sm">Compressões 100–120/min, 5–6 cm, troca a cada 2 min. 5H/5T: hipovolemia, hipóxia, H⁺, hipo/hipercalemia, hipotermia · pneumotórax, tamponamento, toxinas, trombose coronariana e pulmonar.</p>';}},
+
+{t:'🩸 Toxicidade por anestésico local (LAST)',f:function(p){
+ var b=1.5*p,i=0.25*p,mx=12*p; return ''+
+ '<div class="flag d"><div><b>Parar a injeção.</b> Chamar ajuda, pedir o kit de lipídeo, O₂ 100% e via aérea.</div></div>'+
+ '<p><b>Intralipid 20% — bolus</b>: '+D(b,'mL')+' (1,5 mL/kg) em 2–3 min.</p>'+
+ '<p><b>Infusão</b>: '+D(i,'mL')+'/min (0,25 mL/kg/min) ≈ '+D(i*60,'mL')+'/h.</p>'+
+ '<p>Instável: repetir bolus até 2× e dobrar a infusão para '+D(i*2,'mL')+'/min.</p>'+
+ '<p><b>Máximo</b> na 1ª hora: '+D(mx,'mL')+' (12 mL/kg).</p>'+
+ '<p><b>Adrenalina</b> em doses reduzidas: <span class="dose">≤ '+fmt(p)+' mcg</span> (≤1 mcg/kg) por vez.</p>'+
+ '<p class="mut sm">EVITAR vasopressina, BCC, betabloqueador e lidocaína como antiarrítmico. Propofol NÃO substitui o lipídeo. RCP prolongada — recuperação pode passar de 1 h; considerar ECMO precoce. Monitorizar 4–6 h (12 h se houve instabilidade).</p>';}},
+
+{t:'🔥 Hipertermia maligna',f:function(p){
+ var d1=2.5*p; return ''+
+ '<p><b>1.</b> Suspender halogenado e succinilcolina. Hiperventilar O₂ 100% em fluxo ≥10 L/min. Não perder tempo trocando o aparelho.</p>'+
+ '<p><b>2. Dantroleno</b> '+D(d1)+' (2,5 mg/kg) EV rápido, repetir a cada 5–10 min até reverter; máx '+D(10*p)+' (10 mg/kg), podendo ser ultrapassado.</p>'+
+ '<p class="mut sm">Frasco de 20 mg + 60 mL de água destilada → <b>'+Math.ceil(d1/20)+' frascos</b> só na 1ª dose. Recrute pessoas para diluir.</p>'+
+ '<p><b>3.</b> Resfriamento ativo até 38 °C. Tratar hipercalemia e acidose.</p>'+
+ '<p><b>4.</b> Diurese >2 mL/kg/h (rabdomiólise). Vigiar CPK, mioglobinúria, coagulopatia, arritmia.</p>'+
+ '<p class="mut sm">NÃO associar bloqueador de canal de cálcio ao dantroleno. Manter 1 mg/kg 6/6 h por 24–48 h em UTI.</p>';}},
+
+{t:'🫁 Anafilaxia perioperatória',f:function(p){ return ''+
+ '<p><b>Adrenalina é primeira linha</b> — IM na face lateral da coxa <span class="dose">0,5 mg</span> (criança 0,01 mg/kg = '+D(Math.min(0.01*p,0.5))+', teto 0,5), repetir a cada 5–10 min.</p>'+
+ '<p><b>Infusão em bomba</b> (após IM, se persistir): <span class="dose">0,05 – 0,3 mcg/kg/min</span> = '+D(0.05*p*60,'mcg')+' a '+D(0.3*p*60,'mcg')+' por hora.</p>'+'<div class="flag i"><div><b>Na diluição 4 mg em 100 mL</b> (40 mcg/mL), para '+fmt(p,p%1===0?0:1)+' kg:<br>iniciar em <b>'+fmt(0.05*p*60/40)+' mL/h</b> e titular até <b>'+fmt(0.3*p*60/40)+' mL/h</b>. Abra <i>Adrenalina — anafilaxia (BIC)</i> nas Drogas para recalcular em qualquer diluição.</div></div>'+'<p><b>Bolus EV</b> se colapso: 10–100 mcg titulado enquanto a bomba é montada.</p>'+
+ '<p><b>Volume</b> — cristaloide '+D(20*p,'mL')+' (20 mL/kg), frequentemente repetido.</p>'+
+ '<p><b>Suspender</b> o agente suspeito: BNM, látex, antibiótico, clorexidina, contraste, coloide.</p>'+
+ '<p><b>Adjuvantes</b> (nunca antes da adrenalina): hidrocortisona '+D(4*p)+' · anti-histamínico · salbutamol.</p>'+
+ '<p><b>Refratária</b>: vasopressina 1–2 U, glucagon 1–5 mg se betabloqueado, azul de metileno '+D(1.75*p)+' (1,5–2 mg/kg).</p>'+
+ '<p class="mut sm">Triptase em 1 h, 4 h e basal (24 h). Investigação alergológica em 4–6 semanas.</p>';}},
+
+{t:'💨 Broncoespasmo grave',f:function(p){ return ''+
+ '<p><b>1.</b> O₂ 100%, aprofundar anestesia (sevoflurano, propofol ou cetamina). Descartar tubo seletivo, secreção, pneumotórax, obstrução do circuito.</p>'+
+ '<p><b>2. Salbutamol</b> — 8–10 jatos no ramo inspiratório, repetíveis.</p>'+
+ '<p><b>3. Adrenalina</b> — 10–100 mcg EV, ou infusão 0,05–0,1 mcg/kg/min = <span class="dose">'+fmt(0.05*p*60)+'–'+fmt(0.1*p*60)+' mcg/h</span>.</p>'+
+ '<p><b>4. Cetamina</b> — '+D(0.5*p)+' a '+D(p)+' (0,5–1 mg/kg).</p>'+
+ '<p><b>5. Sulfato de magnésio</b> — '+D(40*p)+' (30–50 mg/kg) em 20 min.</p>'+
+ '<p><b>6. Hidrocortisona</b> — '+D(4*p)+' (efeito em 4–6 h, iniciar cedo).</p>'+
+ '<p class="mut sm">FR baixa, tempo expiratório longo, hipercapnia permissiva. Vigiar auto-PEEP e colapso por aprisionamento aéreo — na dúvida, desconectar do circuito alguns segundos.</p>';}},
+
+{t:'⚠️ Hipercalemia aguda',f:function(p){ return ''+
+ '<p><b>1. Gluconato de cálcio 10%</b> — '+D(30*p)+' ou 10–20 mL em 5 min. Estabiliza membrana; não reduz o K. Repetir se ECG persistir alterado.</p>'+
+ '<p><b>2. Insulina regular</b> 10 U + <b>glicose 50%</b> 50 mL — desloca K em 15 min, dura 4–6 h. Glicemia horária.</p>'+
+ '<p><b>3. Salbutamol</b> 10–20 mg nebulizado — aditivo à insulina.</p>'+
+ '<p><b>4. Bicarbonato</b> — '+D(p,'mEq')+' (1 mEq/kg) só se houver acidose metabólica.</p>'+
+ '<p><b>5. Remoção</b> — furosemida, resina de troca ou diálise.</p>'+
+ '<p class="mut sm">ECG: T apiculada → PR longo e P plana → QRS alargado → onda sinusoidal → PCR. Suspender succinilcolina, AINE, IECA/BRA, espironolactona e soluções com K.</p>';}},
+
+{t:'🧠 Bradicardia e BAV instáveis',f:function(p){ return ''+
+ '<p><b>Atropina</b> — 0,5–1 mg a cada 3–5 min, máx 3 mg (criança 0,02 mg/kg = '+D(0.02*p)+', mín 0,1 mg).</p>'+
+ '<p><b>Adrenalina</b> — 2–10 mcg/min, ou 0,02–0,1 mcg/kg/min = <span class="dose">'+fmt(0.02*p*60)+'–'+fmt(0.1*p*60)+' mcg/h</span>.</p>'+
+ '<p><b>Dopamina</b> — 5–20 mcg/kg/min. <b>Isoprenalina</b> — 0,02–0,2 mcg/kg/min.</p>'+
+ '<p><b>Marcapasso transcutâneo</b> se refratária; sedar antes.</p>'+
+ '<p class="mut sm">Em Mobitz II e BAV total a atropina costuma ser ineficaz e pode piorar — ir para marcapasso/catecolamina. Reflexo vagal cirúrgico (tração peritoneal, pneumoperitônio, oculocardíaco): pedir para cessar o estímulo primeiro.</p>';}},
+
+{t:'💉 Reversão de anticoagulação',f:function(p){ return ''+
+ '<p><b>Heparina</b> → protamina 1 mg por 100 U da última hora (máx 50 mg), EV lenta em 10 min.</p>'+
+ '<p><b>Enoxaparina</b> → protamina 1 mg por 1 mg se &lt;8 h (reversão ~60%).</p>'+
+ '<p><b>Varfarina</b> → vitamina K 5–10 mg EV + CCP 25–50 UI/kg = <span class="dose">'+fmt(25*p,0)+'–'+fmt(50*p,0)+' UI</span>.</p>'+
+ '<p><b>Dabigatrana</b> → idarucizumabe 5 g (2 × 2,5 g).</p>'+
+ '<p><b>Rivaroxabana / apixabana</b> → andexanet alfa, ou CCP 50 UI/kg = <span class="dose">'+fmt(50*p,0)+' UI</span>.</p>'+
+ '<p><b>Antiplaquetário</b> → plaquetas (eficácia limitada) + desmopressina '+D(0.3*p,'mcg')+' (0,3 mcg/kg).</p>'+
+ '<p class="mut sm">Protamina: hipotensão, hipertensão pulmonar e reação anafilactoide — risco maior em usuário de insulina NPH, alérgico a peixe e vasectomizado.</p>';}},
+
+{t:'🩹 Hemorragia maciça',f:function(p){ return ''+
+ '<p><b>Ácido tranexâmico</b> — 1 g (ou '+D(15*p)+') em 10 min + 1 g em 8 h. Nas primeiras 3 h do trauma.</p>'+
+ '<p><b>Transfusão maciça</b> — hemácias : plasma : plaquetas em 1:1:1.</p>'+
+ '<p><b>Fibrinogênio</b> — manter &gt;150–200 mg/dL (obstetrícia &gt;200). Concentrado 25–50 mg/kg = <span class="dose">'+fmt(25*p,0)+'–'+fmt(50*p,0)+' mg</span>.</p>'+
+ '<p><b>Cálcio</b> — gluconato '+D(30*p)+' a cada 4 U de hemocomponente (o citrato quela cálcio).</p>'+
+ '<p><b>Alvos</b>: T &gt;35 °C · pH &gt;7,2 · Ca²⁺ iônico &gt;1,1 mmol/L · plaquetas &gt;50.000 (100.000 se TCE).</p>'+
+ '<p class="mut sm">Tríade letal: hipotermia, acidose, coagulopatia. Aquecer todo fluido. Hipotensão permissiva até controle do foco, exceto em TCE.</p>';}},
+
+{t:'🍬 Cetoacidose diabética',f:function(p){ return ''+
+ '<p><b>Volume</b> — SF 0,9% '+D(15*p,'mL')+' a '+D(20*p,'mL')+' na 1ª hora.</p>'+
+ '<p><b>Insulina regular</b> — '+D(0.1*p,'U')+'/h (0,1 U/kg/h). Sem bolus se K &lt;3,3 mEq/L — repor potássio primeiro.</p>'+
+ '<p><b>Potássio</b> — repor quando K &lt;5,2 e houver diurese; 20–30 mEq por litro.</p>'+
+ '<p><b>Glicose 5–10%</b> — associar quando glicemia 200–250 mg/dL, mantendo insulina até fechar o ânion-gap.</p>'+
+ '<p class="mut sm">Queda-alvo 50–75 mg/dL/h. Correção rápida causa edema cerebral, sobretudo em criança. Bicarbonato só se pH &lt;6,9.</p>';}}
+];
+
+/* ================================================================
+   ESTADO
+   ================================================================ */
+var S = {peso:70, altura:170, sexo:'M', gtt:20, fav:[]};
+try{ Object.assign(S, JSON.parse(localStorage.getItem('anestex')||'{}')); }catch(e){}
+function save(){ try{ localStorage.setItem('anestex', JSON.stringify(S)); }catch(e){} }
+
+function n(v){ v=parseFloat(String(v).replace(',','.')); return isFinite(v)?v:NaN; }
+function fmt(v,d){
+  if(!isFinite(v)) return '—';
+  if(d===undefined){ var a=Math.abs(v); d = a>=100?0 : a>=10?1 : a>=1?2 : a>=0.1?2 : a>=0.01?3 : 4; }
+  var s=v.toFixed(d);
+  if(d>0) s=s.replace(/0+$/,'').replace(/\.$/,'');
+  return s.replace('.',',');
+}
+
+/* ---------- motor de unidades ----------
+   MF: fator para a unidade canônica de cada família                */
+var MF = {ng:{f:0.001,fam:'m'}, mcg:{f:1,fam:'m'}, mg:{f:1000,fam:'m'}, g:{f:1e6,fam:'m'},
+          U:{f:1,fam:'u'}, mU:{f:0.001,fam:'u'}, mEq:{f:1,fam:'e'}, mL:{f:1,fam:'v'}};
+function parseU(u){
+  var p=u.split('/'), m=p[0], kg=false, t=null;
+  for(var i=1;i<p.length;i++){ if(p[i]==='kg') kg=true; else t=p[i]; }
+  return {m:m, kg:kg, t:t, fam:(MF[m]||{}).fam, f:(MF[m]||{}).f};
+}
+/* dose -> massa canônica por hora */
+function toBase(val,u,peso){
+  var q=parseU(u); if(!q.f) return NaN;
+  var x = val*q.f;
+  if(q.kg) x *= peso;
+  if(q.t==='min') x *= 60;
+  return x;
+}
+function fromBase(base,u,peso){
+  var q=parseU(u); if(!q.f) return NaN;
+  var x = base/q.f;
+  if(q.kg) x /= peso;
+  if(q.t==='min') x /= 60;
+  return x;
+}
+/* unidade equivalente sem /kg e com /kg */
+function absU(u){ var q=parseU(u); return q.m + (q.t?'/'+q.t:''); }
+function kgU(u){ var q=parseU(u); return q.m + '/kg' + (q.t?'/'+q.t:''); }
+/* alternativas de unidade oferecidas no dropdown, mesma família */
+function unitOpts(u){
+  var q=parseU(u), fam=q.fam, out=[];
+  var masses = fam==='m' ? ['ng','mcg','mg'] : fam==='u' ? ['mU','U'] : fam==='e' ? ['mEq'] : ['mL'];
+  var times = q.t ? ['min','h'] : [null];
+  masses.forEach(function(m){ times.forEach(function(t){
+    [true,false].forEach(function(k){
+      out.push(m + (k?'/kg':'') + (t?'/'+t:''));
+    });
+  });});
+  return out;
+}
+function concPerMl(cM,cU,cV){ var q=parseU(cU); return (cM*q.f)/cV; }
+
+/* ================================================================
+   ROTEAMENTO
+   ================================================================ */
+var R = {tab:'drg', level:'cats', cat:null, drug:null, sub:'inf', set:null, q:''};
+var VIEWS = ['drg','sets','fav','seg','emg'];
+
+document.querySelectorAll('nav button').forEach(function(b){
+  b.onclick=function(){
+    R.tab=b.dataset.v;
+    if(R.tab==='drg'){ R.level='cats'; R.drug=null; }
+    if(R.tab==='sets'){ R.set=null; }
+    document.querySelectorAll('nav button').forEach(function(x){ x.classList.toggle('on',x===b); });
+    render();
+  };
+});
+document.getElementById('backBtn').onclick=function(){
+  if(R.tab==='drg'){
+    if(R.level==='calc'){ R.level = R.cat==='__all'||R.cat==='__fav' ? 'list' : 'list'; R.drug=null; }
+    else if(R.level==='list'){ R.level='cats'; R.cat=null; }
+  } else if(R.tab==='sets'){ R.set=null; }
+  else if(R.tab==='fav'){ R.drug=null; R.level='cats'; }
+  render();
+};
+
+function setHeader(title, backTx){
+  var bb=document.getElementById('backBtn'), lg=document.getElementById('hlogo'), ht=document.getElementById('htitle');
+  if(title){ bb.style.display='flex'; document.getElementById('backTx').textContent=backTx||'Voltar';
+             lg.style.display='none'; ht.style.display='block'; ht.textContent=title; }
+  else { bb.style.display='none'; lg.style.display='block'; ht.style.display='none'; }
+}
+
+function render(){
+  VIEWS.forEach(function(k){ document.getElementById('v-'+k).classList.toggle('on', k===R.tab); });
+  if(R.tab==='drg') renderDrg();
+  if(R.tab==='sets') renderSets();
+  if(R.tab==='fav') renderFav();
+  if(R.tab==='seg') renderSeg();
+  if(R.tab==='emg') renderEmg();
+  window.scrollTo(0,0);
+}
+
+/* ---------- peso global ---------- */
+function setPeso(v){
+  S.peso=v; save();
+  document.getElementById('chipWv').textContent = fmt(v, v%1===0?0:1);
+  render();
+}
+var mW=document.getElementById('mW');
+document.getElementById('chipW').onclick=function(){
+  document.getElementById('mWin').value=S.peso; mW.classList.add('on');
+  setTimeout(function(){ var i=document.getElementById('mWin'); i.focus(); i.select(); },80);
+};
+document.getElementById('mWc').onclick=function(){ mW.classList.remove('on'); };
+mW.onclick=function(e){ if(e.target===mW) mW.classList.remove('on'); };
+document.getElementById('mWo').onclick=function(){
+  var v=n(document.getElementById('mWin').value);
+  if(isFinite(v)&&v>0&&v<400) setPeso(v);
+  mW.classList.remove('on');
+};
+document.getElementById('mWin').addEventListener('keydown',function(e){
+  if(e.key==='Enter') document.getElementById('mWo').click();
+});
+
+/* ================================================================
+   ABA DROGAS — categorias → lista → cálculo
+   ================================================================ */
+function drugsOf(cat){
+  if(cat==='__all') return DB.slice().sort(byName);
+  if(cat==='__fav') return DB.filter(function(d){return S.fav.indexOf(d.n)>=0;}).sort(byName);
+  return DB.filter(function(d){ return d.cat===cat; }).sort(byName);
+}
+function byName(a,b){ return a.n.localeCompare(b.n,'pt-BR'); }
+function findDrug(nm){ for(var i=0;i<DB.length;i++) if(DB[i].n===nm) return DB[i]; return null; }
+
+function rangeTxt(d){
+  if(d.inf) return (d.inf.lo===d.inf.hi?fmt(d.inf.lo):fmt(d.inf.lo)+'–'+fmt(d.inf.hi))+' '+d.inf.u;
+  if(d.bol) return (d.bol.lo===d.bol.hi?fmt(d.bol.lo):fmt(d.bol.lo)+'–'+fmt(d.bol.hi))+' '+d.bol.u;
+  return '';
+}
+
+function renderDrg(){
+  var el=document.getElementById('v-drg');
+  if(R.level==='cats'){
+    setHeader(null);
+    var h='<div class="search"><input type="text" id="qd" placeholder="Buscar droga…" autocomplete="off" value="'+(R.q||'')+'"></div>';
+    if(R.q){
+      var q=R.q.toLowerCase();
+      var hits=DB.filter(function(d){ return (d.n+' '+d.en+' '+d.cat).toLowerCase().indexOf(q)>=0; }).sort(byName);
+      h+='<div class="rows">'+hits.map(rowDrug).join('')+'</div>';
+      if(!hits.length) h+='<div class="empty">Nenhuma droga encontrada.</div>';
+    }else{
+      h+='<div class="rows">';
+      h+='<div class="r" data-cat="__all"><div><div class="nm">Todas as drogas</div></div><div class="cnt">'+DB.length+'</div><div class="chev"></div></div>';
+      CATS.forEach(function(c){
+        var k=drugsOf(c).length; if(!k) return;
+        h+='<div class="r" data-cat="'+c+'"><div><div class="nm">'+c+'</div></div><div class="cnt">'+k+'</div><div class="chev"></div></div>';
+      });
+      h+='</div>';
+    }
+    el.innerHTML=h;
+    var qi=document.getElementById('qd');
+    qi.oninput=function(){ R.q=this.value; var p=this.selectionStart; renderDrg();
+      var ni=document.getElementById('qd'); ni.focus(); ni.setSelectionRange(p,p); };
+    el.querySelectorAll('.r[data-cat]').forEach(function(r){
+      r.onclick=function(){ R.cat=r.dataset.cat; R.level='list'; R.q=''; render(); };
+    });
+    bindDrugRows(el);
+  }
+  else if(R.level==='list'){
+    var title = R.cat==='__all' ? 'Todas as drogas' : R.cat;
+    setHeader(title,'Categorias');
+    var list=drugsOf(R.cat);
+    el.innerHTML='<div class="rows">'+list.map(rowDrug).join('')+'</div>';
+    bindDrugRows(el);
+  }
+  else { renderCalc(el); }
+}
+function rowDrug(d){
+  var fav=S.fav.indexOf(d.n)>=0;
+  return '<div class="r" data-d="'+d.n+'"><div style="min-width:0"><div class="nm">'+d.n+(fav?' <span style="color:var(--warn)">★</span>':'')+
+    '</div><div class="en">'+d.en+'</div></div><div class="rt">'+rangeTxt(d)+'</div><div class="chev"></div></div>';
+}
+function bindDrugRows(el){
+  el.querySelectorAll('.r[data-d]').forEach(function(r){
+    r.onclick=function(){ R.drug=findDrug(r.dataset.d); R.sub = R.drug.inf?'inf':'bol'; R.level='calc'; render(); };
+  });
+}
+
+/* ---------------- TELA DE CÁLCULO ---------------- */
+var CS = null;   /* estado do cálculo atual */
+
+function renderCalc(el){
+  var d=R.drug;
+  setHeader(d.n, R.cat==='__all'?'Todas as drogas':(R.cat||'Drogas'));
+  var fav=S.fav.indexOf(d.n)>=0;
+  var tabs='<div class="segs">'+
+    '<button data-s="inf"'+(R.sub==='inf'?' class="on"':'')+(d.inf?'':' disabled style="opacity:.35"')+'>Infusão</button>'+
+    '<button data-s="bol"'+(R.sub==='bol'?' class="on"':'')+(d.bol?'':' disabled style="opacity:.35"')+'>Bolus</button>'+
+    '<button data-s="note"'+(R.sub==='note'?' class="on"':'')+'>Nota</button></div>';
+
+  var body='';
+  if(R.sub==='inf' && d.inf) body=calcInfHTML(d);
+  else if(R.sub==='bol' && d.bol) body=calcBolHTML(d);
+  else body='<div class="card"><h2>Nota clínica</h2><div class="note">'+noteHTML(d)+'</div></div>';
+
+  el.innerHTML=tabs+body+
+    '<div class="card"><div class="kv"><span>'+d.amp+'</span>'+
+    '<span><button class="star'+(fav?' on':'')+'" id="favBtn">'+(fav?'★':'☆')+'</button></span></div></div>';
+
+  el.querySelectorAll('.segs button').forEach(function(b){
+    if(b.disabled) return;
+    b.onclick=function(){ R.sub=b.dataset.s; renderDrg(); };
+  });
+  document.getElementById('favBtn').onclick=function(){
+    var i=S.fav.indexOf(d.n);
+    if(i>=0) S.fav.splice(i,1); else S.fav.push(d.n);
+    save(); renderDrg();
+  };
+  if(R.sub==='inf' && d.inf) bindInf(d);
+  if(R.sub==='bol' && d.bol) bindBol(d);
+}
+
+function noteHTML(d){
+  var p=S.peso, t=d.note.replace(/\n/g,'<br>');
+  return t;
+}
+
+/* ----- INFUSÃO: linhas Peso / Rate / = / = / Range / Diluição ----- */
+function calcInfHTML(d){
+  var f=d.inf;
+  if(!CS || CS.drug!==d.n){
+    CS={drug:d.n, uRate:f.u, uAbs:absU(f.u), cM:f.cM, cV:f.cV, cU:f.cU};
+    /* dose inicial = média GEOMÉTRICA da faixa: numa faixa larga (ex. nora 0,01–1)
+       a média aritmética cairia perto do teto; a geométrica cai na dose de início real */
+    CS.dose = parseFloat(Math.sqrt(f.lo*f.hi).toPrecision(2));
+  }
+  var opts=function(sel){ return unitOpts(f.u).map(function(u){
+    return '<option'+(u===sel?' selected':'')+'>'+u+'</option>'; }).join(''); };
+  return '<div class="card">'+
+   '<div class="cline"><div class="lb">Peso</div><input type="text" id="ciW" inputmode="decimal" step="any" value="'+S.peso+'"><div class="ustatic">kg</div></div>'+
+   '<div class="cline"><div class="lb">Dose</div><input type="text" id="ciD" inputmode="decimal" step="any"><select id="ciDU">'+opts(CS.uRate)+'</select></div>'+
+   '<div class="cline"><div class="lb eq">=</div><input type="text" id="ciA" inputmode="decimal" step="any" class="res"><select id="ciAU">'+opts(CS.uAbs)+'</select></div>'+
+   '<div class="cline"><div class="lb eq">=</div><input type="text" id="ciR" inputmode="decimal" step="any" class="res"><div class="ustatic">mL/h</div></div>'+
+   '<div class="rangebox" id="ciRange"></div>'+
+   '<div class="cline" style="margin-top:12px"><div class="lb">Diluição</div><input type="text" id="ciCM" inputmode="decimal" step="any" value="'+CS.cM+'"><div class="ustatic">'+CS.cU+'</div></div>'+
+   '<div class="cline"><div class="lb">em</div><input type="text" id="ciCV" inputmode="decimal" step="any" value="'+CS.cV+'"><div class="ustatic">mL total</div></div>'+
+   '<div class="cline"><div class="lb eq">=</div><input type="text" id="ciC" inputmode="decimal" step="any" class="res" readonly><div class="ustatic" id="ciCU"></div></div>'+
+   '</div><div id="ciFlags"></div>';
+}
+
+function bindInf(d){
+  var f=d.inf, ids=['ciW','ciD','ciDU','ciA','ciAU','ciR','ciCM','ciCV'];
+  var lock=false;
+  function el(i){ return document.getElementById(i); }
+
+  function conc(){ return concPerMl(n(el('ciCM').value), CS.cU, n(el('ciCV').value)); }
+
+  function paint(src){
+    if(lock) return; lock=true;
+    var p=n(el('ciW').value); if(isFinite(p)&&p>0&&p!==S.peso){ S.peso=p; save();
+      document.getElementById('chipWv').textContent=fmt(p,p%1===0?0:1); }
+    p = isFinite(p)&&p>0 ? p : S.peso;
+    CS.uRate=el('ciDU').value; CS.uAbs=el('ciAU').value;
+    CS.cM=n(el('ciCM').value); CS.cV=n(el('ciCV').value);
+    var c=conc(), base;
+
+    if(src==='rate')      base = toBase(n(el('ciD').value), CS.uRate, p);
+    else if(src==='abs')  base = toBase(n(el('ciA').value), CS.uAbs, p);
+    else if(src==='ml')   base = n(el('ciR').value) * c;
+    else                  base = toBase(CS.dose, CS.uRate, p);
+
+    if(isFinite(base)){
+      CS.dose = fromBase(base, CS.uRate, p);
+      if(src!=='rate') el('ciD').value = fmt(CS.dose);
+      if(src!=='abs')  el('ciA').value = fmt(fromBase(base, CS.uAbs, p));
+      if(src!=='ml')   el('ciR').value = isFinite(c)&&c>0 ? fmt(base/c) : '';
+    }
+    var cq=parseU(CS.cU);
+    el('ciC').value = isFinite(c) ? fmt(c/cq.f) : '';
+    el('ciCU').textContent = CS.cU+'/mL';
+
+    /* Range em dose e em mL/h */
+    var rl=toBase(f.lo,f.u,p), rh=toBase(f.hi,f.u,p);
+    var eq = (f.lo===f.hi);
+    var rb = (eq?fmt(f.lo):fmt(f.lo)+'–'+fmt(f.hi))+' <b>'+f.u+'</b>'+(eq?' <span class="mut">(dose fixa)</span>':'');
+    if(isFinite(c)&&c>0) rb += '<br>'+(eq?fmt(rl/c):fmt(rl/c)+'–'+fmt(rh/c))+' <b>mL/h</b>';
+    el('ciRange').innerHTML = 'Faixa &nbsp; '+rb;
+
+    /* alertas */
+    var native = isFinite(base)? fromBase(base,f.u,p) : NaN, fl='';
+    var rate = isFinite(base)&&isFinite(c)&&c>0 ? base/c : NaN;
+    if(isFinite(native)){
+      if(native>f.hi) fl+='<div class="flag d"><div><b>Acima da faixa.</b> '+fmt(native)+' '+f.u+' passa do máximo de '+fmt(f.hi)+'. Confira diluição, peso e indicação antes de programar a bomba.</div></div>';
+      else if(native<f.lo && f.lo!==f.hi) fl+='<div class="flag w"><div>Abaixo da faixa habitual ('+fmt(f.lo)+'–'+fmt(f.hi)+' '+f.u+').</div></div>';
+    }
+    if(isFinite(rate)&&rate>0){
+      if(rate>250) fl+='<div class="flag w"><div><b>'+fmt(rate)+' mL/h</b> — volume alto. Considere diluição mais concentrada.</div></div>';
+      if(rate<0.5) fl+='<div class="flag w"><div><b>'+fmt(rate)+' mL/h</b> — imprecisa na maioria das bombas. Considere diluir menos.</div></div>';
+      fl+='<div class="flag i"><div><b>'+fmt(rate)+' mL/h</b> = '+fmt(rate*24,0)+' mL/24 h &nbsp;·&nbsp; '+
+          fmt(rate*S.gtt/60,1)+' gotas/min &nbsp;·&nbsp; seringa 50 mL dura <b>'+fmt(50/rate,1)+' h</b>, bolsa 250 mL <b>'+fmt(250/rate,1)+' h</b></div></div>';
+    }
+    el('ciFlags').innerHTML=fl;
+    lock=false;
+  }
+
+  el('ciD').addEventListener('input',function(){paint('rate');});
+  el('ciA').addEventListener('input',function(){paint('abs');});
+  el('ciR').addEventListener('input',function(){paint('ml');});
+  el('ciW').addEventListener('input',function(){paint('rate');});
+  el('ciCM').addEventListener('input',function(){paint('rate');});
+  el('ciCV').addEventListener('input',function(){paint('rate');});
+  el('ciDU').addEventListener('change',function(){
+    var p=S.peso, base=toBase(n(el('ciD').value), CS.uRate, p);
+    CS.uRate=el('ciDU').value;
+    el('ciD').value = fmt(fromBase(base, CS.uRate, p)); paint('rate');
+  });
+  el('ciAU').addEventListener('change',function(){ CS.uAbs=el('ciAU').value; paint('rate'); });
+  el('ciD').value = fmt(CS.dose);
+  paint(null);
+}
+
+/* ----- BOLUS ----- */
+function calcBolHTML(d){
+  var b=d.bol;
+  return '<div class="card">'+
+   '<div class="cline"><div class="lb">Peso</div><input type="text" id="cbW" inputmode="decimal" step="any" value="'+S.peso+'"><div class="ustatic">kg</div></div>'+
+   '<div class="cline"><div class="lb">Dose</div><input type="text" id="cbD" inputmode="decimal" step="any" value="'+fmt(b.lo)+'"><div class="ustatic">'+b.u+'</div></div>'+
+   '<div class="cline"><div class="lb eq">=</div><input type="text" id="cbT" class="res" readonly><div class="ustatic" id="cbTU"></div></div>'+
+   '<div class="rangebox" id="cbRange"></div></div><div id="cbFlags"></div>';
+}
+function bindBol(d){
+  var b=d.bol;
+  function el(i){ return document.getElementById(i); }
+  function paint(){
+    var p=n(el('cbW').value);
+    if(isFinite(p)&&p>0&&p!==S.peso){ S.peso=p; save(); document.getElementById('chipWv').textContent=fmt(p,p%1===0?0:1); }
+    p=isFinite(p)&&p>0?p:S.peso;
+    var q=parseU(b.u), dose=n(el('cbD').value);
+    var total = q.kg ? dose*p : dose;
+    var capped = b.cap && total>b.cap;
+    if(capped) total=b.cap;
+    el('cbT').value=fmt(total);
+    el('cbTU').textContent=q.m;
+    var tl = q.kg? b.lo*p : b.lo, th = q.kg? b.hi*p : b.hi;
+    if(b.cap){ tl=Math.min(tl,b.cap); th=Math.min(th,b.cap); }
+    el('cbRange').innerHTML='Faixa &nbsp; '+(b.lo===b.hi?fmt(b.lo):fmt(b.lo)+'–'+fmt(b.hi))+' <b>'+b.u+'</b>'+
+      (q.kg? '<br>'+(tl===th?fmt(tl):fmt(tl)+'–'+fmt(th))+' <b>'+q.m+'</b> para '+fmt(p,p%1===0?0:1)+' kg':'')+
+      (b.cap? '<br><span style="color:var(--warn)">Teto absoluto '+fmt(b.cap)+' '+q.m+'</span>':'');
+    var fl='';
+    if(capped) fl+='<div class="flag w"><div>Dose limitada ao teto de <b>'+fmt(b.cap)+' '+q.m+'</b> — o cálculo por peso daria mais que isso.</div></div>';
+    if(isFinite(dose)&&(dose>b.hi*1.5)) fl+='<div class="flag d"><div><b>Acima da faixa.</b> Confira a indicação.</div></div>';
+    el('cbFlags').innerHTML=fl;
+  }
+  el('cbW').addEventListener('input',paint);
+  el('cbD').addEventListener('input',paint);
+  paint();
+}
+
+/* ================================================================
+   SETS
+   ================================================================ */
+function renderSets(){
+  var el=document.getElementById('v-sets');
+  if(!R.set){
+    setHeader(null);
+    el.innerHTML='<div class="rows">'+SETS.map(function(s,i){
+      return '<div class="r" data-s="'+i+'"><div><div class="nm">'+s.n+'</div>'+
+        '<div class="en">'+s.d.join(' · ')+'</div></div><div class="cnt">'+s.d.length+'</div><div class="chev"></div></div>';
+    }).join('')+'</div>'+
+    '<div class="flag i" style="margin-top:12px"><div>Sets mostram as drogas do combo com as velocidades já calculadas para <b>'+fmt(S.peso,S.peso%1===0?0:1)+' kg</b> na diluição padrão. Toque numa droga para abrir o cálculo completo.</div></div>';
+    el.querySelectorAll('.r[data-s]').forEach(function(r){
+      r.onclick=function(){ R.set=SETS[+r.dataset.s]; render(); };
+    });
+  }else{
+    var s=R.set, p=S.peso;
+    setHeader(s.n,'Sets');
+    var h='<div class="card"><h2>Protocolo</h2><div class="note">'+s.obs+'</div></div><div class="rows">';
+    s.d.forEach(function(nm){
+      var d=findDrug(nm); if(!d) return;
+      var line='';
+      if(d.inf){
+        var c=concPerMl(d.inf.cM,d.inf.cU,d.inf.cV);
+        var lo=toBase(d.inf.lo,d.inf.u,p)/c, hi=toBase(d.inf.hi,d.inf.u,p)/c;
+        line=(d.inf.lo===d.inf.hi?fmt(d.inf.lo):fmt(d.inf.lo)+'–'+fmt(d.inf.hi))+' '+d.inf.u+'<br>'+(lo===hi?fmt(lo):fmt(lo)+'–'+fmt(hi))+' mL/h';
+      }else if(d.bol){
+        var q=parseU(d.bol.u), t1=q.kg?d.bol.lo*p:d.bol.lo, t2=q.kg?d.bol.hi*p:d.bol.hi;
+        if(d.bol.cap){ t1=Math.min(t1,d.bol.cap); t2=Math.min(t2,d.bol.cap); }
+        line=(t1===t2?fmt(t1):fmt(t1)+'–'+fmt(t2))+' '+q.m;
+      }
+      h+='<div class="r" data-d="'+d.n+'"><div style="min-width:0"><div class="nm">'+d.n+'</div>'+
+         '<div class="en">'+(d.inf?d.inf.cM+' '+d.inf.cU+' em '+d.inf.cV+' mL':d.amp)+'</div></div>'+
+         '<div class="rt">'+line+'</div><div class="chev"></div></div>';
+    });
+    el.innerHTML=h+'</div>';
+    el.querySelectorAll('.r[data-d]').forEach(function(r){
+      r.onclick=function(){ R.tab='drg'; R.cat=null; R.drug=findDrug(r.dataset.d);
+        R.sub=R.drug.inf?'inf':'bol'; R.level='calc';
+        document.querySelectorAll('nav button').forEach(function(x){ x.classList.toggle('on',x.dataset.v==='drg'); });
+        render(); };
+    });
+  }
+}
+
+/* ================================================================
+   FAVORITOS
+   ================================================================ */
+function renderFav(){
+  var el=document.getElementById('v-fav');
+  setHeader(null);
+  var list=drugsOf('__fav');
+  if(!list.length){
+    el.innerHTML='<div class="empty">Nenhum favorito ainda.<br><br>Abra uma droga e toque na estrela ☆ para fixá-la aqui.</div>';
+    return;
+  }
+  el.innerHTML='<div class="rows">'+list.map(rowDrug).join('')+'</div>';
+  el.querySelectorAll('.r[data-d]').forEach(function(r){
+    r.onclick=function(){ R.tab='drg'; R.cat='__fav'; R.drug=findDrug(r.dataset.d);
+      R.sub=R.drug.inf?'inf':'bol'; R.level='calc';
+      document.querySelectorAll('nav button').forEach(function(x){ x.classList.toggle('on',x.dataset.v==='drg'); });
+      render(); };
+  });
+}
+
+/* ================================================================
+   SEGURANÇA
+   ================================================================ */
+function bodyCalc(){
+  var w=S.peso,h=S.altura,m=(S.sexo==='M'),pol=h/2.54;
+  var ibw=(m?50:45.5)+2.3*(pol-60); if(!(ibw>0)) ibw=NaN;
+  var bmi=w/Math.pow(h/100,2);
+  return {ibw:ibw, abw:ibw+0.4*(w-ibw), bmi:bmi,
+          lbw:m?(9270*w)/(6680+216*bmi):(9270*w)/(8780+244*bmi),
+          bsa:Math.sqrt(h*w/3600)};
+}
+function renderSeg(){
+  var el=document.getElementById('v-seg'); setHeader(null);
+  var b=bodyCalc(), w=S.peso;
+  var cls=b.bmi<18.5?'Baixo peso':b.bmi<25?'Eutrófico':b.bmi<30?'Sobrepeso':b.bmi<35?'Obesidade I':b.bmi<40?'Obesidade II':'Obesidade III';
+  var h='<div class="card"><h2>Paciente</h2>'+
+   '<div class="cline"><div class="lb">Peso</div><input type="text" id="sW" inputmode="decimal" step="any" value="'+w+'"><div class="ustatic">kg</div></div>'+
+   '<div class="cline"><div class="lb">Altura</div><input type="text" id="sH" inputmode="decimal" step="any" value="'+S.altura+'"><div class="ustatic">cm</div></div>'+
+   '<div class="cline"><div class="lb">Sexo</div><select id="sS"><option value="M"'+(S.sexo==='M'?' selected':'')+'>Masculino</option><option value="F"'+(S.sexo==='F'?' selected':'')+'>Feminino</option></select><div class="ustatic"></div></div>'+
+   '<div style="margin-top:10px">'+
+   '<div class="kv"><span>IMC</span><span><b>'+fmt(b.bmi,1)+'</b> kg/m² — '+cls+'</span></div>'+
+   '<div class="kv"><span>Peso ideal (Devine)</span><span><b>'+fmt(b.ibw,1)+'</b> kg</span></div>'+
+   '<div class="kv"><span>Peso corrigido</span><span>'+fmt(b.abw,1)+' kg</span></div>'+
+   '<div class="kv"><span>Peso magro (Janmahasatian)</span><span>'+fmt(b.lbw,1)+' kg</span></div>'+
+   '<div class="kv"><span>Superfície corporal</span><span>'+fmt(b.bsa,2)+' m²</span></div></div>'+
+   '<div class="flag i"><div><b>Qual peso usar:</b> propofol indução → magro, manutenção → corrigido · rocurônio, lidocaína EV, aminoglicosídeo → ideal · succinilcolina, sugamadex, adrenalina → real · opioide lipofílico → magro/corrigido · volume corrente → ideal.</div></div></div>';
+
+  h+='<div class="card"><h2>Anestésico local — dose máxima</h2><div class="wrap"><table><tr><th>Agente</th><th style="text-align:right">Sem vaso</th><th style="text-align:right">Com vaso</th></tr>';
+  LA.forEach(function(l){
+    var s=Math.min(l.sv*w,l.capS), c=Math.min(l.cv*w,l.capC);
+    h+='<tr><td>'+l.n+'<div class="sm mut">'+fmt(l.sv)+' / '+fmt(l.cv)+' mg/kg</div></td>'+
+       '<td class="num">'+fmt(s,0)+' mg'+(l.sv*w>l.capS?'<div class="sm mut">teto</div>':'')+'</td>'+
+       '<td class="num">'+fmt(c,0)+' mg'+(l.cv*w>l.capC?'<div class="sm mut">teto</div>':'')+'</td></tr>';
+  });
+  h+='</table></div><div class="flag w"><div>Doses máximas <b>orientativas</b> para adulto hígido. Reduzir em idoso, hepatopata, gestante e ICC. Absorção por sítio: intercostal &gt; caudal &gt; epidural &gt; plexo &gt; subcutâneo.</div></div></div>';
+
+  var pcts=[0.2,0.25,0.5,0.75,1,2];
+  h+='<div class="card"><h2>Volume máximo em mL</h2><div class="sm mut" style="margin:-4px 0 8px">Dose máxima sem vasoconstritor, por concentração.</div><div class="wrap"><table><tr><th>Agente</th>'+
+     pcts.map(function(x){return '<th style="text-align:right">'+String(x).replace('.',',')+'%</th>';}).join('')+'</tr>';
+  LA.forEach(function(l){
+    var s=Math.min(l.sv*w,l.capS);
+    h+='<tr><td>'+l.n+'</td>'+pcts.map(function(x){
+      return l.pct.indexOf(x)<0?'<td class="num" style="color:var(--mut)">—</td>':'<td class="num">'+fmt(s/(x*10),0)+'</td>';
+    }).join('')+'</tr>';
+  });
+  h+='</table></div></div>';
+
+  h+='<div class="card"><h2>Ventilação e via aérea</h2>'+
+   '<div class="kv"><span>Volume corrente 6 mL/kg PI</span><span><b>'+fmt(6*b.ibw,0)+'</b> mL</span></div>'+
+   '<div class="kv"><span>Volume corrente 8 mL/kg PI</span><span>'+fmt(8*b.ibw,0)+' mL</span></div>'+
+   '<div class="kv"><span>Tubo orotraqueal</span><span>'+(S.sexo==='M'?'8,0–8,5':'7,0–7,5')+' mm</span></div>'+
+   '<div class="kv"><span>Profundidade (comissura)</span><span>'+(S.sexo==='M'?'22–23':'21–22')+' cm</span></div>'+
+   '<div class="flag i"><div>Platô &lt;30 cmH₂O · driving pressure &lt;15 · PEEP 5–8 (mais em obeso e laparoscopia).</div></div></div>';
+
+  h+='<div class="card"><h2>Ajustes</h2>'+
+   '<div class="cline"><div class="lb">Gotas/mL</div><input type="text" id="sG" inputmode="decimal" step="any" value="'+S.gtt+'"><div class="ustatic">equipo</div></div>'+
+   '<div class="sm mut">Macrogotas 20 · microgotas 60. Usado para converter mL/h em gotas/min nas telas de infusão.</div></div>';
+
+  el.innerHTML=h;
+  document.getElementById('sW').addEventListener('input',function(){ var v=n(this.value); if(v>0){S.peso=v;save();
+    document.getElementById('chipWv').textContent=fmt(v,v%1===0?0:1); renderSeg();} });
+  document.getElementById('sH').addEventListener('input',function(){ var v=n(this.value); if(v>0){S.altura=v;save();renderSeg();} });
+  document.getElementById('sS').addEventListener('change',function(){ S.sexo=this.value;save();renderSeg(); });
+  document.getElementById('sG').addEventListener('input',function(){ var v=n(this.value); if(v>0){S.gtt=v;save();} });
+}
+
+/* ================================================================
+   EMERGÊNCIA
+   ================================================================ */
+function renderEmg(){
+  var el=document.getElementById('v-emg'); setHeader(null);
+  el.innerHTML='<div class="card" style="padding:10px 14px"><div class="kv" style="border:none"><span>Doses para</span><span><b>'+fmt(S.peso,S.peso%1===0?0:1)+'</b> kg</span></div></div>'+
+    EMG.map(function(e){
+      return '<details class="acc"'+(e.open?' open':'')+'><summary>'+e.t+'</summary><div class="body">'+e.f(S.peso)+'</div></details>';
+    }).join('')+
+    '<div class="foot"><b>Anestex</b> — apoio ao cálculo, uso exclusivo por profissional habilitado.<br>'+
+    'Não substitui julgamento clínico, bula, protocolo institucional nem dupla checagem.<br>'+
+    'Confira sempre a apresentação real da ampola antes de administrar.<br><br>'+
+    DB.length+' drogas · funciona sem internet · nenhum dado sai do aparelho</div>';
+}
+
+/* ================================================================
+   INÍCIO
+   ================================================================ */
+document.addEventListener('gesturestart',function(e){ e.preventDefault(); });
+document.getElementById('chipWv').textContent = fmt(S.peso, S.peso%1===0?0:1);
+render();
+</script>
+<script>
+/* registra o service worker: depois da 1ª abertura, o app funciona 100% offline */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>
