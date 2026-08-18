@@ -1,6 +1,6 @@
 /* Anestex service worker — cache-first, funciona sem rede */
-var CACHE = 'anestex-v3';
-var ASSETS = ['./','./index.html','./manifest.webmanifest','./icon.svg'];
+var CACHE = 'anestex-v4';
+var ASSETS = ['./','./index.html','./manifest.webmanifest','./icon.svg','./icon-180.png','./icon-192.png','./icon-512.png'];
 
 self.addEventListener('install', function(e){
   self.skipWaiting();

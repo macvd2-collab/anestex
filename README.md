@@ -1,3 +1,5 @@
+<img src="icon-512.png" width="110" align="right">
+
 # Anestex
 
 Calculadora de infusões e doses anestésicas. Funciona **100% offline** depois da primeira abertura.
@@ -11,6 +13,12 @@ Calculadora de infusões e doses anestésicas. Funciona **100% offline** depois 
 ## Instalar no iPhone
 
 Abra o endereço no Safari → botão compartilhar → **Adicionar à Tela de Início**.
+
+---
+
+<img src="arte-original.png" width="420">
+
+_Arte-conceito que originou a identidade visual._
 
 ---
 
