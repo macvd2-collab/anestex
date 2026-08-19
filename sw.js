@@ -6,7 +6,7 @@
      próxima abertura. Sem internet, cai no cache e funciona igual.
    • Ícones e manifest: cache primeiro (não mudam e não têm risco clínico).
 */
-var CACHE = 'anestex-v9';
+var CACHE = 'anestex-v10';
 var ASSETS = ['./','./index.html','./manifest.webmanifest','./icon.svg',
               './icon-180.png','./icon-192.png','./icon-512.png'];
 var NET_TIMEOUT = 4000;   // se a rede demorar mais que isso, usa o cache
