@@ -217,13 +217,13 @@ var DB = [
  note:'Início 60–90 s — o mais rápido dos fentanílicos. Bolus 10–20 mcg/kg; manutenção 0,5–2 mcg/kg/min. Usar pura (500 mcg/mL) — diluída, o volume infundido fica alto demais. Útil em procedimentos curtos e intensos.'},
 {n:'Sufentanil',en:'Sufentanil',cat:'Anestesia',amp:'50 mcg/mL → diluir 5 mcg/mL',
  inf:{lo:0.05,hi:1.5,u:'mcg/kg/h',cM:250,cV:50,cU:'mcg'},bol:{lo:0.1,hi:0.5,u:'mcg/kg'},
- note:'~10× o fentanil, estabilidade hemodinâmica e cinética favorável em cirurgia longa. Alta ligação proteica (efeito ampliado em hipoalbuminemia). Peridural 10–25 mcg; raqui 2,5–5 mcg.'},
+ note:'Manutenção 0,15–0,7 mcg/kg/h. ~10× o fentanil, estabilidade hemodinâmica e cinética favorável em cirurgia longa. Alta ligação proteica (efeito ampliado em hipoalbuminemia). Peridural 10–25 mcg; raqui 2,5–5 mcg.'},
 {n:'Sugamadex',en:'Sugammadex',cat:'Anestesia',amp:'100 mg/mL',
  bol:{lo:2,hi:16,u:'mg/kg'},
  note:'PESO REAL. TOF ≥2: 2 mg/kg. Bloqueio profundo (1–2 PTC): 4 mg/kg. Resgate imediato após rocurônio de intubação: 16 mg/kg. Reverte rocurônio/vecurônio (não cisatracúrio). Interfere com contraceptivo hormonal por 7 dias.'},
 {n:'Neostigmina',en:'Neostigmine',cat:'Anestesia',amp:'0,5 mg/mL',
  bol:{lo:0.04,hi:0.07,u:'mg/kg',cap:5},
- note:'Reverter só com TOF-count ≥2. 0,04–0,05 mg/kg (máx 5 mg). SEMPRE com atropina 0,015 mg/kg ou glicopirrolato 0,2 mg por 1 mg de neostigmina. Em bloqueio profundo é ineficaz e pode dar fraqueza paradoxal.'},
+ note:'Reverter só com TOF-count ≥2. 0,04–0,07 mg/kg (máx 5 mg). SEMPRE com atropina 0,015 mg/kg ou glicopirrolato 0,2 mg por 1 mg de neostigmina. Em bloqueio profundo é ineficaz e pode dar fraqueza paradoxal.'},
 {n:'Flumazenil',en:'Flumazenil',cat:'Anestesia',amp:'0,1 mg/mL',
  bol:{lo:0.2,hi:0.2,u:'mg',cap:1},
  note:'0,2 mg a cada minuto até resposta (máx 1 mg; 3 mg/h). Ressedação comum — vigiar. Risco de convulsão em usuário crônico de benzo e em intoxicação por tricíclico.'},
@@ -235,12 +235,12 @@ var DB = [
 {n:'Morfina',en:'Morphine',cat:'Analgésicos',amp:'10 mg/mL · 1 mg/mL',
  inf:{lo:0.5,hi:5,u:'mg/h',cM:50,cV:50,cU:'mg'},bol:{lo:0.05,hi:0.1,u:'mg/kg'},
  note:'Titular devagar (pico 15–30 min). Metabólito M6G ativo, renal — acúmulo na DRC. Libera histamina. PCA: bolus 1 mg, lockout 6–10 min. Raqui 100–200 mcg (depressão tardia até 24 h); peridural 2–4 mg.'},
-{n:'Morfina (Pediatria)',en:'Morphine (Paeds)',cat:'Analgésicos',amp:'1 mg/mL (diluído)',
+{n:'Morfina (Pediatria)',en:'Morphine (Paeds)',cat:'Analgésicos',amp:'Diluir para 0,2 mg/mL (10 mg em 50 mL)',
  inf:{lo:10,hi:40,u:'mcg/kg/h',cM:10,cV:50,cU:'mg'},bol:{lo:50,hi:100,u:'mcg/kg'},
  note:'Bolus 50–100 mcg/kg. Infusão 10–40 mcg/kg/h (neonato: iniciar mais baixo, 5–10). Vigiar apneia; monitorização contínua.'},
 {n:'Tramadol',en:'Tramadol',cat:'Analgésicos',amp:'50 mg/mL',
  bol:{lo:1,hi:2,u:'mg/kg',cap:100},
- note:'1–1,5 mg/kg (máx 100 mg/dose, 400 mg/dia). Náusea frequente — antiemético junto. Reduz limiar convulsivo; síndrome serotoninérgica com ISRS/IMAO.'},
+ note:'1–2 mg/kg (máx 100 mg/dose, 400 mg/dia). Náusea frequente — antiemético junto. Reduz limiar convulsivo; síndrome serotoninérgica com ISRS/IMAO.'},
 {n:'Oxicodona',en:'Oxycodone',cat:'Analgésicos',amp:'10 mg/mL',
  bol:{lo:0.05,hi:0.15,u:'mg/kg'},
  note:'EV 0,05–0,15 mg/kg titulado. Biodisponibilidade oral alta. Menos prurido/liberação de histamina que a morfina.'},
@@ -249,13 +249,13 @@ var DB = [
  note:'0,5–1 mg/kg VO (máx 60 mg). NÃO usar EV (hipotensão). Pró-fármaco dependente de CYP2D6 — evitar em criança e amamentação (metabolizadores rápidos). Contraindicada <12 anos e pós-adenotonsilectomia.'},
 {n:'Paracetamol',en:'Paracetamol',cat:'Analgésicos',amp:'10 mg/mL (1 g/100 mL)',
  bol:{lo:15,hi:20,u:'mg/kg',cap:1000},
- note:'15 mg/kg EV em 15 min (máx 1 g/dose, 4 g/dia; 3 g em hepatopata/etilista/desnutrido). Se <50 kg, 15 mg/kg. Base da analgesia multimodal.'},
+ note:'15–20 mg/kg EV em 15 min (máx 1 g/dose, 4 g/dia; 3 g em hepatopata/etilista/desnutrido). Se <50 kg, usar 15 mg/kg. Base da analgesia multimodal.'},
 {n:'Ibuprofeno',en:'Ibuprofen',cat:'Analgésicos',amp:'VO / EV',
  bol:{lo:2.5,hi:10,u:'mg/kg',cap:400},
- note:'5–10 mg/kg (máx 400 mg/dose, 40 mg/kg/dia). Evitar em DRC, hipovolemia, sangramento, alergia a AINE. Cautela em asma.'},
+ note:'2,5–10 mg/kg (máx 400 mg/dose, 40 mg/kg/dia). Evitar em DRC, hipovolemia, sangramento, alergia a AINE. Cautela em asma.'},
 {n:'Naproxeno',en:'Naproxen',cat:'Analgésicos',amp:'VO',
  bol:{lo:5,hi:10,u:'mg/kg',cap:500},
- note:'5–7,5 mg/kg (máx 500 mg). AINE de duração longa. Mesmas precauções renais/hemostáticas dos AINEs.'},
+ note:'5–10 mg/kg (máx 500 mg). AINE de duração longa. Mesmas precauções renais/hemostáticas dos AINEs.'},
 {n:'Indometacina',en:'Indomethacin',cat:'Analgésicos',amp:'VO/retal · EV (PCA neonatal)',
  bol:{lo:0.5,hi:1,u:'mg/kg',cap:50},
  note:'AINE potente. Analgesia/anti-inflamatório: 0,5–1 mg/kg (25–50 mg) VO ou retal. Fechamento de canal arterial no neonato é outra indicação e outra dose: 0,1–0,2 mg/kg EV. Nefrotóxico e antiagregante — evitar em DRC, hipovolemia, sangramento e anastomose recente; vigiar diurese e plaquetas no neonato.'},
@@ -290,7 +290,7 @@ var DB = [
  note:'0,25–0,5 mcg/kg/min. Inibidor de PDE-3: inotropismo/lusitropismo independentes de beta — útil sob betabloqueador e em disfunção de VD/HP. Vasodilata (pode exigir vasopressor). Meia-vida longa, renal — reduzir na DRC. Ataque 50 mcg/kg geralmente omitido.'},
 {n:'Anrinona',en:'Amrinone',cat:'Inotrópicos',amp:'5 mg/mL',
  inf:{lo:5,hi:20,u:'mcg/kg/min',cM:100,cV:100,cU:'mg'},bol:{lo:0.75,hi:0.75,u:'mg/kg'},
- note:'Inibidor de PDE-3 mais antigo. Ataque 0,75 mg/kg, manutenção 5–10 mcg/kg/min. Trombocitopenia dose-dependente. Preterido pela milrinona.'},
+ note:'Inibidor de PDE-3 mais antigo. Ataque 0,75 mg/kg, manutenção 5–20 mcg/kg/min. Trombocitopenia dose-dependente. Preterido pela milrinona.'},
 {n:'Isoprenalina',en:'Isoproterenol',cat:'Inotrópicos',amp:'0,2 mg/mL',
  inf:{lo:0.01,hi:0.3,u:'mcg/kg/min',cM:2,cV:100,cU:'mg'},
  note:'Beta puro. Bradicardia/BAV refratário como ponte para marcapasso, torsades, transplante cardíaco (coração denervado). Muito arritmogênico e aumenta consumo de O2.'},
@@ -318,7 +318,7 @@ var DB = [
 /* ---------------- ANTIARRÍTMICOS ---------------- */
 {n:'Amiodarona',en:'Amiodarone',cat:'Antiarrítmicos',amp:'150 mg/3 mL (50 mg/mL)',
  inf:{lo:0.5,hi:1.5,u:'mg/min',cM:900,cV:500,cU:'mg'},bol:{lo:5,hi:5,u:'mg/kg'},
- note:'Ataque 150 mg em 10 min → 1 mg/min por 6 h → 0,5 mg/min por 18 h (máx 2,2 g/24 h). PCR FV/TV: 300 mg → 150 mg. Diluir SEMPRE em SG5%. Flebite em periférica. Bolus rápido: hipotensão (solvente).'},
+ note:'Ataque 150 mg em 10 min → 1 mg/min por 6 h → 0,5 mg/min por 18 h (máx 2,2 g/24 h). PCR FV/TV: 300 mg → 150 mg (adulto); a aba Bolus usa 5 mg/kg, que é a dose pediátrica. Diluir SEMPRE em SG5%. Flebite em periférica. Bolus rápido: hipotensão (solvente).'},
 {n:'Adenosina',en:'Adenosine',cat:'Antiarrítmicos',amp:'3 mg/mL',
  bol:{lo:6,hi:6,u:'mg',cap:18},
  note:'TSV: 6 mg EV rápido em bolus + flush, depois 12 mg, depois 12 mg. Criança 0,1 mg/kg → 0,2 mg/kg. Via central ou proximal, o mais rápido possível. Assistolia transitória esperada. Reduzir com dipiridamol/carbamazepina; dobrar com teofilina.'},
@@ -358,19 +358,19 @@ var DB = [
  note:'Intubação 0,15 mg/kg; manutenção 1–3 mcg/kg/min. Eliminação de Hofmann (independe de fígado/rim) — escolha em falência múltipla de órgãos. Não libera histamina. NÃO revertido por sugamadex.'},
 {n:'Atracúrio',en:'Atracurium',cat:'Relaxantes musculares',amp:'10 mg/mL',
  inf:{lo:4,hi:12,u:'mcg/kg/min',cM:500,cV:100,cU:'mg'},bol:{lo:0.5,hi:0.6,u:'mg/kg'},
- note:'Intubação 0,5 mg/kg; manutenção 5–10 mcg/kg/min. Hofmann + hidrólise por esterases. Libera histamina em bolus rápido (hipotensão, broncoespasmo) — injetar devagar. Metabólito laudanosina em infusão longa.'},
+ note:'Intubação 0,5 mg/kg; manutenção 4–12 mcg/kg/min. Hofmann + hidrólise por esterases. Libera histamina em bolus rápido (hipotensão, broncoespasmo) — injetar devagar. Metabólito laudanosina em infusão longa.'},
 {n:'Mivacúrio',en:'Mivacurium',cat:'Relaxantes musculares',amp:'2 mg/mL',
  inf:{lo:3,hi:15,u:'mcg/kg/min',cM:20,cV:10,cU:'mg'},bol:{lo:0.15,hi:0.2,u:'mg/kg'},
- note:'Ação curta. Metabolizado pela colinesterase plasmática — bloqueio prolongado se atividade baixa (deficiência/gestação/inibidores). Libera histamina. Manutenção 3–15 mcg/kg/min.'},
+ note:'Intubação 0,15–0,2 mg/kg. Ação curta. Metabolizado pela colinesterase plasmática — bloqueio prolongado se atividade baixa (deficiência/gestação/inibidores). Libera histamina. Manutenção 3–15 mcg/kg/min.'},
 {n:'Vecurônio',en:'Vecuronium',cat:'Relaxantes musculares',amp:'Pó 10 mg → reconstituir',
  inf:{lo:0.8,hi:1.3,u:'mcg/kg/min',cM:20,cV:20,cU:'mg'},bol:{lo:0.08,hi:0.1,u:'mg/kg'},
- note:'Intubação 0,08–0,1 mg/kg; manutenção 0,8–1,2 mcg/kg/min. Sem efeito cardiovascular. Eliminação hepática/renal — acúmulo na disfunção. Revertível por sugamadex.'},
+ note:'Intubação 0,08–0,1 mg/kg; manutenção 0,8–1,3 mcg/kg/min. Sem efeito cardiovascular. Eliminação hepática/renal — acúmulo na disfunção. Revertível por sugamadex.'},
 {n:'Succinilcolina',en:'Suxamethonium (IV)',cat:'Relaxantes musculares',amp:'50 mg/mL',
  bol:{lo:1,hi:2,u:'mg/kg'},
  note:'Sequência rápida 1–2 mg/kg (1–1,5 costuma bastar; 1,5–2 dá condições mais confiáveis). Início 45–60 s, duração 5–10 min. Contraindicada em queimadura >24 h, lesão medular/denervação, rabdomiólise, hipercalemia, HM. Bradicardia (criança, 2ª dose) — atropina. Fasciculações, mialgia, ↑PIO/PIC.'},
 {n:'Succinilcolina IM',en:'Suxamethonium (IM)',cat:'Relaxantes musculares',amp:'50 mg/mL',
  bol:{lo:3,hi:4,u:'mg/kg',cap:150},
- note:'Sem acesso venoso (laringoespasmo em criança): 4 mg/kg IM (máx 150 mg). Início mais lento (~3 min). Mesmas contraindicações da via EV; atropina junto.'},
+ note:'Sem acesso venoso (laringoespasmo em criança): 3–4 mg/kg IM, habitualmente 4 (máx 150 mg). Início mais lento (~3 min). Mesmas contraindicações da via EV; atropina junto.'},
 
 /* ---------------- ANTIEMÉTICOS ---------------- */
 {n:'Ondansetrona',en:'Ondansetron',cat:'Antieméticos',amp:'2 mg/mL',
@@ -751,7 +751,7 @@ document.getElementById('mWc').onclick=function(){ mW.classList.remove('on'); };
 mW.onclick=function(e){ if(e.target===mW) mW.classList.remove('on'); };
 document.getElementById('mWo').onclick=function(){
   var v=n(document.getElementById('mWin').value);
-  if(isFinite(v)&&v>0&&v<400) setPeso(v);
+  if(isFinite(v)&&v>=1&&v<=400) setPeso(v);
   mW.classList.remove('on');
 };
 document.getElementById('mWin').addEventListener('keydown',function(e){
@@ -913,10 +913,24 @@ function bindInf(d){
     CS.cM=n(el('ciCM').value); CS.cV=n(el('ciCV').value);
     var c=conc(), base;
 
-    if(src==='rate')      base = toBase(n(el('ciD').value), CS.uRate, p);
-    else if(src==='abs')  base = toBase(n(el('ciA').value), CS.uAbs, p);
-    else if(src==='ml')   base = n(el('ciR').value) * c;
-    else                  base = toBase(CS.dose, CS.uRate, p);
+    var bruto;
+    if(src==='rate')      { bruto=n(el('ciD').value); base = toBase(bruto, CS.uRate, p); }
+    else if(src==='abs')  { bruto=n(el('ciA').value); base = toBase(bruto, CS.uAbs, p); }
+    else if(src==='ml')   { bruto=n(el('ciR').value); base = bruto * c; }
+    else                  { bruto=CS.dose;            base = toBase(bruto, CS.uRate, p); }
+
+    /* entrada inválida ou negativa: limpa os derivados em vez de deixar
+       um número antigo na tela, que o usuário leria como se fosse o atual */
+    if(!isFinite(bruto) || bruto < 0 || !isFinite(base)){
+      if(src!=='rate') el('ciD').value='';
+      if(src!=='abs')  el('ciA').value='';
+      if(src!=='ml')   el('ciR').value='';
+      el('ciRange').innerHTML='Faixa &nbsp; '+(f.lo===f.hi?fmt(f.lo):fmt(f.lo)+'–'+fmt(f.hi))+' <b>'+f.u+'</b>';
+      el('ciFlags').innerHTML = (el('ciD').value===''&&el('ciA').value===''&&el('ciR').value==='')
+        ? '' : '<div class="flag w"><div>Valor inválido. Use apenas números positivos (vírgula ou ponto).</div></div>';
+      if(bruto<0) el('ciFlags').innerHTML='<div class="flag d"><div><b>Valor negativo.</b> Não existe dose ou velocidade negativa.</div></div>';
+      lock=false; return;
+    }
 
     if(isFinite(base)){
       CS.dose = fromBase(base, CS.uRate, p);
@@ -939,7 +953,9 @@ function bindInf(d){
     var native = isFinite(base)? fromBase(base,f.u,p) : NaN, fl='';
     var rate = isFinite(base)&&isFinite(c)&&c>0 ? base/c : NaN;
     if(isFinite(native)){
-      if(native>f.hi) fl+='<div class="flag d"><div><b>Acima da faixa.</b> '+fmt(native)+' '+f.u+' passa do máximo de '+fmt(f.hi)+'. Confira diluição, peso e indicação antes de programar a bomba.</div></div>';
+      if(native>f.hi*20) fl+='<div class="flag d"><div><b>Valor implausível.</b> '+fmt(native)+' '+f.u+
+        ' é mais de 20× o máximo da faixa ('+fmt(f.hi)+'). Provável erro de digitação — confira antes de qualquer coisa.</div></div>';
+      else if(native>f.hi) fl+='<div class="flag d"><div><b>Acima da faixa.</b> '+fmt(native)+' '+f.u+' passa do máximo de '+fmt(f.hi)+'. Confira diluição, peso e indicação antes de programar a bomba.</div></div>';
       else if(native<f.lo && f.lo!==f.hi) fl+='<div class="flag w"><div>Abaixo da faixa habitual ('+fmt(f.lo)+'–'+fmt(f.hi)+' '+f.u+').</div></div>';
     }
     if(isFinite(rate)&&rate>0){
@@ -985,6 +1001,16 @@ function bindBol(d){
     if(isFinite(p)&&p>0&&p!==S.peso){ S.peso=p; save(); document.getElementById('chipWv').textContent=fmt(p,p%1===0?0:1); }
     p=isFinite(p)&&p>0?p:S.peso;
     var q=parseU(b.u), dose=n(el('cbD').value);
+    if(!isFinite(dose) || dose<0){
+      el('cbT').value='';
+      el('cbFlags').innerHTML = el('cbD').value==='' ? ''
+        : '<div class="flag '+(dose<0?'d':'w')+'"><div>'+(dose<0
+            ? '<b>Valor negativo.</b> Não existe dose negativa.'
+            : 'Valor inválido. Use apenas números positivos (vírgula ou ponto).')+'</div></div>';
+      var tl0=q.kg?b.lo*p:b.lo, th0=q.kg?b.hi*p:b.hi;
+      el('cbRange').innerHTML='Faixa &nbsp; '+(b.lo===b.hi?fmt(b.lo):fmt(b.lo)+'–'+fmt(b.hi))+' <b>'+b.u+'</b>';
+      return;
+    }
     var total = q.kg ? dose*p : dose;
     var capped = b.cap && total>b.cap;
     if(capped) total=b.cap;
@@ -1120,12 +1146,14 @@ function renderSeg(){
   /* ouvintes: atualizam SÓ os resultados, nunca a estrutura */
   document.getElementById('sW').addEventListener('input',function(){
     var v=n(this.value);
-    if(isFinite(v)&&v>0&&v<400){ S.peso=v; save();
+    if(isFinite(v)&&v>=1&&v<=400){ S.peso=v; save();
       document.getElementById('chipWv').textContent=fmt(v,v%1===0?0:1); }
     updateSeg();
   });
+  document.getElementById('sW').addEventListener('blur',function(){ this.value=S.peso; });
+  document.getElementById('sH').addEventListener('blur',function(){ this.value=S.altura; });
   document.getElementById('sH').addEventListener('input',function(){
-    var v=n(this.value); if(isFinite(v)&&v>0&&v<260){ S.altura=v; save(); }
+    var v=n(this.value); if(isFinite(v)&&v>=30&&v<=260){ S.altura=v; save(); }
     updateSeg();
   });
   document.getElementById('sS').addEventListener('change',function(){ S.sexo=this.value; save(); updateSeg(); });
