@@ -128,8 +128,8 @@ td.num{text-align:right;font-weight:700;color:var(--acc)}
 
 nav{position:fixed;bottom:0;left:0;right:0;z-index:60;display:flex;background:rgba(13,18,24,.96);
   backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line);padding-bottom:var(--safe-b)}
-nav button{flex:1;background:none;border:none;padding:8px 2px 7px;color:var(--mut);font-size:10.5px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
-nav button svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+nav button{flex:1;background:none;border:none;padding:8px 1px 7px;color:var(--mut);font-size:9.5px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;letter-spacing:-.2px;min-width:0}
+nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 nav button.on{color:var(--acc)}
 
 .modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.6);display:none;align-items:flex-end}
@@ -161,6 +161,7 @@ nav button.on{color:var(--acc)}
   <section class="view" id="v-sets"></section>
   <section class="view" id="v-fav"></section>
   <section class="view" id="v-seg"></section>
+  <section class="view" id="v-trf"></section>
   <section class="view" id="v-emg"></section>
 </main>
 
@@ -169,6 +170,7 @@ nav button.on{color:var(--acc)}
   <button data-v="sets"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="5" rx="1"/><rect x="3" y="12" width="18" height="8" rx="1"/></svg>Sets</button>
   <button data-v="fav"><svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.5 6 .9-4.3 4.2 1 6L12 17.8 6.6 19.6l1-6L3.3 9.4l6-.9z"/></svg>Favoritos</button>
   <button data-v="seg"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Segurança</button>
+  <button data-v="trf"><svg viewBox="0 0 24 24"><path d="M12 3s6 6.4 6 10.4A6 6 0 0 1 6 13.4C6 9.4 12 3 12 3z"/><path d="M9 13.5h6"/></svg>Transfusão</button>
   <button data-v="emg"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Emergência</button>
 </nav>
 
@@ -644,9 +646,9 @@ var EMG = [
 /* VERSAO — mantenha igual ao CACHE do sw.js. Aparece no rodape da aba
    Seguranca para dar para saber, olhando o aparelho, se ele esta na
    versao corrigida ou numa copia velha presa no cache. */
-var APP = {v:'v11', data:'19/ago/2026'};
+var APP = {v:'v12', data:'19/ago/2026'};
 
-var S = {peso:70, altura:170, sexo:'M', gtt:20, fav:[]};
+var S = {peso:70, altura:170, sexo:'M', gtt:20, fav:[], hbIni:12, hbMin:7};
 try{ Object.assign(S, JSON.parse(localStorage.getItem('anestex')||'{}')); }catch(e){}
 /* O PESO NAO PERSISTE ENTRE ABERTURAS: volta a 70 kg toda vez que o app abre.
    Guardar o peso do paciente anterior e armadilha — abrir o app para um caso
@@ -709,7 +711,7 @@ function concPerMl(cM,cU,cV){ var q=parseU(cU); return (cM*q.f)/cV; }
    ROTEAMENTO
    ================================================================ */
 var R = {tab:'drg', level:'cats', cat:null, drug:null, sub:'inf', set:null, q:''};
-var VIEWS = ['drg','sets','fav','seg','emg'];
+var VIEWS = ['drg','sets','fav','seg','trf','emg'];
 
 document.querySelectorAll('nav button').forEach(function(b){
   b.onclick=function(){
@@ -742,6 +744,7 @@ function render(){
   if(R.tab==='sets') renderSets();
   if(R.tab==='fav') renderFav();
   if(R.tab==='seg') renderSeg();
+  if(R.tab==='trf') renderTrf();
   if(R.tab==='emg') renderEmg();
   window.scrollTo(0,0);
 }
@@ -1231,6 +1234,174 @@ function updateSeg(){
     '<div class="kv"><span>Tubo orotraqueal</span><span>'+(S.sexo==='M'?'8,0–8,5':'7,0–7,5')+' mm</span></div>'+
     '<div class="kv"><span>Profundidade (comissura)</span><span>'+(S.sexo==='M'?'22–23':'21–22')+' cm</span></div>';
 }
+
+/* ================================================================
+   TRANSFUSÃO — foco em intraoperatório
+   Plaquetas apresentadas como POOL DE BUFFY COAT, que é o padrão daqui.
+   ================================================================ */
+function volemia(){
+  var w=S.peso;
+  /* mL/kg por faixa; adulto homem 70, mulher 65 */
+  var f = S.sexo==='M' ? 70 : 65;
+  return {porKg:f, total:w*f};
+}
+
+function renderTrf(){
+  var el=document.getElementById('v-trf'); setHeader(null);
+  /* estrutura fixa: os campos são criados uma vez; só os resultados mudam */
+  el.innerHTML =
+   '<div class="card"><h2>Gatilhos transfusionais</h2><div id="trfGat"></div></div>'+
+
+   '<div class="card"><h2>Concentrado de hemácias</h2><div id="trfHem"></div></div>'+
+
+   '<div class="card"><h2>Plaquetas — pool de buffy coat</h2><div id="trfPlq"></div></div>'+
+
+   '<div class="card"><h2>Plasma fresco congelado</h2><div id="trfPfc"></div></div>'+
+
+   '<div class="card"><h2>Fibrinogênio e crioprecipitado</h2><div id="trfFib"></div></div>'+
+
+   '<div class="card"><h2>Volemia e perda permitida</h2>'+
+   '<div class="cline"><div class="lb">Hb inicial</div><input type="text" id="tHbI" inputmode="decimal" autocomplete="off"><div class="ustatic">g/dL</div></div>'+
+   '<div class="cline"><div class="lb">Hb mínima</div><input type="text" id="tHbM" inputmode="decimal" autocomplete="off"><div class="ustatic">g/dL</div></div>'+
+   '<div id="trfVol" style="margin-top:8px"></div></div>'+
+
+   '<div id="trfAcc"></div>'+
+
+   '<div class="foot"><b>Anestex '+APP.v+'</b> · gatilhos são referência, não regra: '+
+   'sangramento ativo, velocidade de perda e reserva fisiológica pesam mais que o número isolado.</div>';
+
+  document.getElementById('tHbI').value=S.hbIni;
+  document.getElementById('tHbM').value=S.hbMin;
+  document.getElementById('tHbI').addEventListener('input',function(){
+    var v=n(this.value); if(isFinite(v)&&v>0&&v<30){ S.hbIni=v; save(); } updateTrf();
+  });
+  document.getElementById('tHbM').addEventListener('input',function(){
+    var v=n(this.value); if(isFinite(v)&&v>0&&v<30){ S.hbMin=v; save(); } updateTrf();
+  });
+  document.getElementById('trfAcc').innerHTML = TRF_ACC.map(function(a){
+    return '<details class="acc"><summary>'+a.t+'</summary><div class="body">'+a.f(S.peso)+'</div></details>';
+  }).join('');
+  updateTrf();
+}
+
+function updateTrf(){
+  var g=document.getElementById('trfGat'); if(!g) return;
+  var w=S.peso, V=volemia();
+
+  /* ---- gatilhos ---- */
+  g.innerHTML =
+    '<div class="kv"><span>Hb &lt; 7 g/dL</span><span>transfundir</span></div>'+
+    '<div class="kv"><span>Hb 7–8 g/dL</span><span>cardiopata, idoso, sangramento ativo</span></div>'+
+    '<div class="kv"><span>Hb 8–10 g/dL</span><span>caso a caso — sintomas e perda em curso</span></div>'+
+    '<div class="kv"><span>Hb &gt; 10 g/dL</span><span>raramente indicado</span></div>'+
+    '<div class="kv"><span>Plaquetas &lt; 50.000</span><span>cirurgia ou sangramento</span></div>'+
+    '<div class="kv"><span>Plaquetas &lt; 100.000</span><span>neurocirurgia, oftálmica, TCE</span></div>'+
+    '<div class="kv"><span>INR &gt; 1,5</span><span>com sangramento ou procedimento</span></div>'+
+    '<div class="kv"><span>Fibrinogênio &lt; 150 mg/dL</span><span>&lt; 200 em obstetrícia</span></div>'+
+    '<div class="flag i"><div><b>Neuroeixo:</b> plaquetas &gt; 80.000 (raqui) e &gt; 80–100.000 (peridural e retirada de cateter) · INR ≤ 1,4 · '+
+    'contagem em queda rápida contraindica mesmo acima do limiar. Em pré-eclâmpsia, checar contagem recente — pode cair em horas.</div></div>'+
+    '<div class="flag w"><div>Estratégia restritiva reduz mortalidade e infecção. O número isolado não decide: perda ativa, velocidade e doença coronariana pesam mais.</div></div>';
+
+  /* ---- hemácias ---- */
+  var hemPed = 10*w, hemPed15 = 15*w;
+  document.getElementById('trfHem').innerHTML =
+    '<div class="kv"><span>Adulto — 1 unidade</span><span>sobe <b>Hb ~1 g/dL</b> · Ht ~3%</span></div>'+
+    '<div class="kv"><span>Pediátrico 10–15 mL/kg</span><span><b>'+fmt(hemPed,0)+'–'+fmt(hemPed15,0)+' mL</b></span></div>'+
+    '<div class="kv"><span>Sobe, nessa dose</span><span>Hb ~2–3 g/dL</span></div>'+
+    '<div class="kv"><span>1 unidade tem</span><span>250–350 mL · Ht 55–65%</span></div>'+
+    '<div class="flag i"><div>Aquecer acima de 50 mL/kg/h ou em transfusão maciça. Filtro de 170–200 µm sempre. '+
+    'Só SF 0,9% na mesma via — Ringer com cálcio coagula e glicosado hemolisa.</div></div>';
+
+  /* ---- plaquetas: buffy coat ---- */
+  var plqPed = 10*w, plqPed15 = 15*w;
+  var poolPeso = Math.max(1, Math.round(w/10));
+  document.getElementById('trfPlq').innerHTML =
+    '<div class="kv"><span>Adulto — <b>1 pool de buffy coat</b></span><span>4–6 unidades reunidas</span></div>'+
+    '<div class="kv"><span>Contém</span><span>≥ 2,4–3,0 × 10¹¹ plaquetas · 250–350 mL</span></div>'+
+    '<div class="kv"><span>Sobe</span><span><b>30.000–50.000/µL</b></span></div>'+
+    '<div class="kv"><span>Pediátrico 10–15 mL/kg</span><span><b>'+fmt(plqPed,0)+'–'+fmt(plqPed15,0)+' mL</b></span></div>'+
+    '<div class="kv"><span>Regra alternativa por peso</span><span>1 U de buffy coat / 10 kg = <b>'+poolPeso+' U</b></span></div>'+
+    '<div class="flag i"><div>Buffy coat: as plaquetas vêm da camada leucoplaquetária de 4–6 doações de sangue total, reunidas em um pool — '+
+    'equivale a 1 aférese (3–4 × 10¹¹) para efeito prático. Não precisa ser ABO idêntico, mas o mesmo ABO rende melhor incremento. '+
+    'Nunca refrigerar. Infundir em 30 min, filtro 170 µm.</div></div>'+
+    '<div class="flag w"><div>Incremento ruim após 2 pools: suspeitar de consumo (sangramento, CIVD, sepse, esplenomegalia) antes de refratariedade imunológica. '+
+    'Contagem de controle 10–60 min após o término.</div></div>';
+
+  /* ---- plasma ---- */
+  var pfc10=10*w, pfc15=15*w;
+  var pfcU = Math.max(1, Math.round(pfc10/220));
+  document.getElementById('trfPfc').innerHTML =
+    '<div class="kv"><span>Dose 10–15 mL/kg</span><span><b>'+fmt(pfc10,0)+'–'+fmt(pfc15,0)+' mL</b></span></div>'+
+    '<div class="kv"><span>Equivale a</span><span>~'+pfcU+'–'+(pfcU+1)+' unidades (200–250 mL cada)</span></div>'+
+    '<div class="kv"><span>Sobe fatores</span><span>~20–30%</span></div>'+
+    '<div class="flag i"><div>Indicado em sangramento com INR &gt; 1,5, transfusão maciça e reversão de varfarina quando não há complexo protrombínico — '+
+    'que é mais rápido, tem menos volume e é preferível se disponível. Descongelar leva 20–30 min: <b>peça antes de precisar</b>.</div></div>'+
+    '<div class="flag w"><div>Não usar como expansor nem para "corrigir" INR discretamente alterado sem sangramento. Principal causa de TRALI.</div></div>';
+
+  /* ---- fibrinogênio ---- */
+  var crioU = Math.max(1, Math.round(w/7));
+  var fib25=25*w/1000, fib50=50*w/1000;
+  document.getElementById('trfFib').innerHTML =
+    '<div class="kv"><span>Crioprecipitado — 1 U/7–10 kg</span><span><b>'+crioU+' unidades</b></span></div>'+
+    '<div class="kv"><span>Sobe fibrinogênio</span><span>~50–100 mg/dL</span></div>'+
+    '<div class="kv"><span>Concentrado 25–50 mg/kg</span><span><b>'+fmt(fib25,1)+'–'+fmt(fib50,1)+' g</b></span></div>'+
+    '<div class="kv"><span>Alvo</span><span>&gt; 150 mg/dL · <b>&gt; 200 em obstetrícia</b></span></div>'+
+    '<div class="flag i"><div>Fibrinogênio é o primeiro fator a cair na hemorragia maciça — antes de plaquetas e dos demais fatores. '+
+    'Em hemorragia obstétrica, valor abaixo de 200 mg/dL prediz gravidade melhor que qualquer outro exame.</div></div>';
+
+  /* ---- volemia e perda permitida ---- */
+  var hbI=S.hbIni, hbM=S.hbMin;
+  var abl = V.total*(hbI-hbM)/hbI;
+  var ok = isFinite(abl) && hbI>hbM && hbI>0;
+  document.getElementById('trfVol').innerHTML =
+    '<div class="kv"><span>Volemia estimada ('+V.porKg+' mL/kg)</span><span><b>'+fmt(V.total,0)+' mL</b></span></div>'+
+    '<div class="kv"><span>Perda permitida até Hb '+fmt(hbM,1)+'</span><span>'+(ok?'<b>'+fmt(abl,0)+' mL</b>':'—')+'</span></div>'+
+    '<div class="kv"><span>Equivale a</span><span>'+(ok?fmt(100*abl/V.total,0)+'% da volemia':'—')+'</span></div>'+
+    '<div class="kv"><span>Perda de 15% ('+fmt(V.total*0.15,0)+' mL)</span><span>classe I — taquicardia leve</span></div>'+
+    '<div class="kv"><span>Perda de 30% ('+fmt(V.total*0.30,0)+' mL)</span><span>classe II–III — hipotensão</span></div>'+
+    '<div class="kv"><span>Perda de 40% ('+fmt(V.total*0.40,0)+' mL)</span><span>classe IV — risco de vida</span></div>'+
+    (ok?'':'<div class="flag w"><div>Hb inicial precisa ser maior que a mínima aceitável.</div></div>')+
+    '<div class="flag i"><div>Volemia: adulto homem 70, mulher 65 · criança 80 · neonato 85–90 · prematuro 90–100 mL/kg. '+
+    'A fórmula é orientação para planejar reposição, não autorização para sangrar até o limite.</div></div>';
+}
+
+var TRF_ACC = [
+{t:'🩸 Protocolo de transfusão maciça',f:function(p){
+  var V = (S.sexo==='M'?70:65)*p;
+  return ''+
+  '<p><b>Ativar quando</b>: perda &gt; 150 mL/min · troca de 1 volemia ('+fmt(V,0)+' mL) em 24 h · metade da volemia ('+fmt(V/2,0)+' mL) em 3 h · ou choque hemorrágico com foco não controlado.</p>'+
+  '<p><b>Proporção</b> — hemácias : plasma : plaquetas em <span class="dose">1 : 1 : 1</span>. Em buffy coat, 1 pool acompanha cada 6 unidades de hemácias.</p>'+
+  '<p><b>Ácido tranexâmico</b> — 1 g (ou '+D(15*p)+') em 10 min + 1 g em 8 h. Nas primeiras 3 h do trauma; depois disso o benefício desaparece.</p>'+
+  '<p><b>Cálcio</b> — gluconato '+D(30*p)+' a cada 4 hemocomponentes. O citrato quela cálcio e a hipocalcemia agrava a coagulopatia e a vasoplegia.</p>'+
+  '<p><b>Fibrinogênio</b> — manter &gt; 150 mg/dL (&gt; 200 em obstetrícia).</p>'+
+  '<p><b>Alvos</b>: temperatura &gt; 35 °C · pH &gt; 7,2 · Ca²⁺ iônico &gt; 1,1 mmol/L · plaquetas &gt; 50.000 (100.000 se TCE).</p>'+
+  '<p class="mut sm">Tríade letal: hipotermia, acidose e coagulopatia — cada uma piora as outras duas. Aquecer todo fluido e o paciente. '+
+  'Hipotensão permissiva (PAS 80–90) até controle do foco, exceto em TCE, onde a perfusão cerebral manda.</p>';}},
+
+{t:'⚠️ Reação transfusional aguda',f:function(p){ return ''+
+  '<div class="flag d"><div><b>Primeiro gesto, sempre: PARAR a transfusão</b> e manter o acesso com SF 0,9%. Não descartar a bolsa — ela vai para o banco com nova amostra do paciente.</div></div>'+
+  '<p><b>Hemolítica aguda</b> (incompatibilidade ABO) — febre, dor lombar, hipotensão, hemoglobinúria. No anestesiado, muitas vezes o único sinal é <b>hipotensão inexplicada e sangramento difuso em campo</b>. '+
+  'Conduta: parar, volume, manter diurese &gt; 1 mL/kg/h, tratar CIVD e hipercalemia. Mortalidade alta.</p>'+
+  '<p><b>TRALI</b> — hipoxemia e infiltrado bilateral até 6 h, sem sobrecarga. Suporte ventilatório; <b>diurético não ajuda</b>. Plasma é a principal fonte.</p>'+
+  '<p><b>TACO</b> (sobrecarga) — hipoxemia com PVC alta, hipertensão e resposta a diurético. Distingue-se do TRALI pela pressão de enchimento e pela resposta à furosemida ('+D(0.5*p)+' a '+D(p)+').</p>'+
+  '<p><b>Febril não hemolítica</b> — elevação &gt; 1 °C sem outros sinais. Antitérmico; descartar hemólise antes de rotular.</p>'+
+  '<p><b>Alérgica / anafilática</b> — urticária isolada: anti-histamínico e retomar devagar. Com broncoespasmo ou hipotensão: tratar como anafilaxia (ver aba Emergência) e considerar deficiência de IgA.</p>'+
+  '<p><b>Contaminação bacteriana</b> — febre alta e choque logo no início. Mais frequente em plaquetas, que ficam em temperatura ambiente. Hemocultura da bolsa e do paciente, antibiótico imediato.</p>';}},
+
+{t:'💉 Cuidados no intraoperatório',f:function(p){ return ''+
+  '<p><b>Checagem à beira do leito</b> é a barreira que evita o erro fatal: identidade do paciente, bolsa e etiqueta, com dupla conferência. Erro de identificação continua sendo a principal causa de reação hemolítica.</p>'+
+  '<p><b>Via</b> — filtro 170–200 µm sempre. Nada de medicação na mesma via. Só SF 0,9%: Ringer lactato tem cálcio e favorece coágulo; glicosado hemolisa.</p>'+
+  '<p><b>Aquecimento</b> — acima de 50 mL/kg/h ('+fmt(50*p,0)+' mL/h para este peso) ou em transfusão maciça. Hipotermia piora coagulopatia e desloca a curva da hemoglobina.</p>'+
+  '<p><b>Sob anestesia geral</b> os sinais clássicos somem: sem queixa de dor, sem calafrio, sem urticária visível sob os campos. Vigie <b>hipotensão sem causa, hemoglobinúria, sangramento difuso e queda da saturação</b>.</p>'+
+  '<p><b>Recuperação intraoperatória</b> (cell saver) — reduz exposição alogênica em cirurgia de grande porte. Devolve hemácias lavadas: sem plaquetas e sem fatores, então grandes volumes exigem reposição destes.</p>'+
+  '<p><b>Testemunha de Jeová</b> — discutir e documentar antes: cell saver e hemodiluição normovolêmica em circuito contínuo costumam ser aceitos; hemocomponentes alogênicos não. Ácido tranexâmico, ferro e eritropoetina entram no plano.</p>';}},
+
+{t:'🧪 O que pedir e quando',f:function(p){ return ''+
+  '<p><b>Antes de cirurgia com sangramento esperado</b>: tipagem e prova cruzada com antecedência. Prova cruzada leva 45–60 min; em emergência, O negativo sai sem prova.</p>'+
+  '<p><b>Sangramento em curso</b>: hemograma, coagulograma, fibrinogênio, cálcio iônico, gasometria com lactato. Repetir a cada 30–60 min — um valor isolado no meio de uma hemorragia já nasceu velho.</p>'+
+  '<p><b>Tromboelastometria</b> (ROTEM/TEG), se disponível, orienta melhor que o coagulograma convencional: separa deficiência de fibrinogênio, de plaquetas e hiperfibrinólise, e responde em minutos.</p>'+
+  '<p><b>Após transfusão maciça</b>: repetir cálcio iônico, potássio, magnésio e gasometria. Vigiar hipercalemia (sangue estocado), hipocalcemia (citrato) e alcalose tardia.</p>';}}
+];
 
 /* ================================================================
    EMERGÊNCIA
