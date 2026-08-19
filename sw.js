@@ -6,7 +6,7 @@
      próxima abertura. Sem internet, cai no cache e funciona igual.
    • Ícones e manifest: cache primeiro (não mudam e não têm risco clínico).
 */
-var CACHE = 'anestex-v7';
+var CACHE = 'anestex-v8';
 var ASSETS = ['./','./index.html','./manifest.webmanifest','./icon.svg',
               './icon-180.png','./icon-192.png','./icon-512.png'];
 var NET_TIMEOUT = 4000;   // se a rede demorar mais que isso, usa o cache
@@ -43,7 +43,10 @@ self.addEventListener('fetch', function(e){
           if(!pronto){ caches.match('./index.html').then(function(c){ if(c) resolve(c); }); }
         }, NET_TIMEOUT);
 
-        fetch(req).then(function(res){
+        /* no-store: ignora o cache HTTP do navegador. O GitHub Pages manda
+           cache-control max-age=600, o que faria uma correcao de dose demorar
+           ate 10 min para aparecer mesmo com rede disponivel. */
+        fetch(req.url, {cache:'no-store'}).then(function(res){
           pronto = true; clearTimeout(prazo);
           var copia = res.clone();
           caches.open(CACHE).then(function(c){
