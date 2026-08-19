@@ -779,39 +779,51 @@ function renderDrg(){
   var el=document.getElementById('v-drg');
   if(R.level==='cats'){
     setHeader(null);
-    var h='<div class="search"><input type="text" id="qd" placeholder="Buscar droga…" autocomplete="off" value="'+(R.q||'')+'"></div>';
-    if(R.q){
-      var q=R.q.toLowerCase();
-      var hits=DB.filter(function(d){ return (d.n+' '+d.en+' '+d.cat).toLowerCase().indexOf(q)>=0; }).sort(byName);
-      h+='<div class="rows">'+hits.map(rowDrug).join('')+'</div>';
-      if(!hits.length) h+='<div class="empty">Nenhuma droga encontrada.</div>';
-    }else{
-      h+='<div class="rows">';
-      h+='<div class="r" data-cat="__all"><div><div class="nm">Todas as drogas</div></div><div class="cnt">'+DB.length+'</div><div class="chev"></div></div>';
-      CATS.forEach(function(c){
-        var k=drugsOf(c).length; if(!k) return;
-        h+='<div class="r" data-cat="'+c+'"><div><div class="nm">'+c+'</div></div><div class="cnt">'+k+'</div><div class="chev"></div></div>';
-      });
-      h+='</div>';
+    /* a caixa de busca é criada UMA vez; a cada tecla só a lista abaixo é redesenhada.
+       Se o campo for recriado, o iPhone fecha o teclado e perde o cursor. */
+    if(!document.getElementById('qd')){
+      el.innerHTML='<div class="search"><input type="text" id="qd" placeholder="Buscar droga…" '+
+        'autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div>'+
+        '<div id="drgList"></div>';
+      var qi=document.getElementById('qd');
+      qi.addEventListener('input',function(){ R.q=this.value; pintaLista(); });
     }
-    el.innerHTML=h;
-    var qi=document.getElementById('qd');
-    qi.oninput=function(){ R.q=this.value; var p=this.selectionStart; renderDrg();
-      var ni=document.getElementById('qd'); ni.focus(); ni.setSelectionRange(p,p); };
-    el.querySelectorAll('.r[data-cat]').forEach(function(r){
-      r.onclick=function(){ R.cat=r.dataset.cat; R.level='list'; R.q=''; render(); };
-    });
-    bindDrugRows(el);
+    document.getElementById('qd').value = R.q||'';
+    pintaLista();
   }
   else if(R.level==='list'){
+    el.innerHTML='';
     var title = R.cat==='__all' ? 'Todas as drogas' : R.cat;
     setHeader(title,'Categorias');
     var list=drugsOf(R.cat);
     el.innerHTML='<div class="rows">'+list.map(rowDrug).join('')+'</div>';
     bindDrugRows(el);
   }
-  else { renderCalc(el); }
+  else { el.innerHTML=''; renderCalc(el); }
 }
+function pintaLista(){
+  var box=document.getElementById('drgList'); if(!box) return;
+  var q=(R.q||'').toLowerCase().trim(), h='';
+  if(q){
+    var hits=DB.filter(function(d){ return (d.n+' '+d.en+' '+d.cat).toLowerCase().indexOf(q)>=0; }).sort(byName);
+    h = hits.length ? '<div class="rows">'+hits.map(rowDrug).join('')+'</div>'
+                    : '<div class="empty">Nenhuma droga encontrada.</div>';
+  }else{
+    h='<div class="rows">';
+    h+='<div class="r" data-cat="__all"><div><div class="nm">Todas as drogas</div></div><div class="cnt">'+DB.length+'</div><div class="chev"></div></div>';
+    CATS.forEach(function(c){
+      var k=drugsOf(c).length; if(!k) return;
+      h+='<div class="r" data-cat="'+c+'"><div><div class="nm">'+c+'</div></div><div class="cnt">'+k+'</div><div class="chev"></div></div>';
+    });
+    h+='</div>';
+  }
+  box.innerHTML=h;
+  box.querySelectorAll('.r[data-cat]').forEach(function(r){
+    r.onclick=function(){ R.cat=r.dataset.cat; R.level='list'; R.q=''; render(); };
+  });
+  bindDrugRows(box);
+}
+
 function rowDrug(d){
   var fav=S.fav.indexOf(d.n)>=0;
   return '<div class="r" data-d="'+d.n+'"><div style="min-width:0"><div class="nm">'+d.n+(fav?' <span style="color:var(--warn)">★</span>':'')+
@@ -1071,57 +1083,111 @@ function bodyCalc(){
 }
 function renderSeg(){
   var el=document.getElementById('v-seg'); setHeader(null);
-  var b=bodyCalc(), w=S.peso;
-  var cls=b.bmi<18.5?'Baixo peso':b.bmi<25?'Eutrófico':b.bmi<30?'Sobrepeso':b.bmi<35?'Obesidade I':b.bmi<40?'Obesidade II':'Obesidade III';
-  var h='<div class="card"><h2>Paciente</h2>'+
-   '<div class="cline"><div class="lb">Peso</div><input type="text" id="sW" inputmode="decimal" step="any" value="'+w+'"><div class="ustatic">kg</div></div>'+
-   '<div class="cline"><div class="lb">Altura</div><input type="text" id="sH" inputmode="decimal" step="any" value="'+S.altura+'"><div class="ustatic">cm</div></div>'+
-   '<div class="cline"><div class="lb">Sexo</div><select id="sS"><option value="M"'+(S.sexo==='M'?' selected':'')+'>Masculino</option><option value="F"'+(S.sexo==='F'?' selected':'')+'>Feminino</option></select><div class="ustatic"></div></div>'+
-   '<div style="margin-top:10px">'+
-   '<div class="kv"><span>IMC</span><span><b>'+fmt(b.bmi,1)+'</b> kg/m² — '+cls+'</span></div>'+
-   '<div class="kv"><span>Peso ideal (Devine)</span><span><b>'+fmt(b.ibw,1)+'</b> kg</span></div>'+
-   '<div class="kv"><span>Peso corrigido</span><span>'+fmt(b.abw,1)+' kg</span></div>'+
-   '<div class="kv"><span>Peso magro (Janmahasatian)</span><span>'+fmt(b.lbw,1)+' kg</span></div>'+
-   '<div class="kv"><span>Superfície corporal</span><span>'+fmt(b.bsa,2)+' m²</span></div></div>'+
-   '<div class="flag i"><div><b>Qual peso usar:</b> propofol indução → magro, manutenção → corrigido · rocurônio, lidocaína EV, aminoglicosídeo → ideal · succinilcolina, sugamadex, adrenalina → real · opioide lipofílico → magro/corrigido · volume corrente → ideal.</div></div></div>';
+  /* estrutura FIXA: os campos são criados uma vez só e nunca mais reconstruídos,
+     senão o cursor salta a cada tecla digitada */
+  el.innerHTML =
+   '<div class="card"><h2>Paciente</h2>'+
+   '<div class="cline"><div class="lb">Peso</div><input type="text" id="sW" inputmode="decimal" autocomplete="off"><div class="ustatic">kg</div></div>'+
+   '<div class="cline"><div class="lb">Altura</div><input type="text" id="sH" inputmode="decimal" autocomplete="off"><div class="ustatic">cm</div></div>'+
+   '<div class="cline"><div class="lb">Sexo</div><select id="sS"><option value="M">Masculino</option><option value="F">Feminino</option></select><div class="ustatic"></div></div>'+
+   '<div style="margin-top:10px" id="segKv"></div>'+
+   '<div class="flag i"><div><b>Qual peso usar:</b> propofol indução &rarr; magro, manutenção &rarr; corrigido · '+
+   '<b>rocurônio, cisatracúrio</b>, vecurônio, atracúrio, lidocaína EV e aminoglicosídeo &rarr; ideal · '+'<b>anestésico local</b> (dose máxima) &rarr; <b>ideal / magro</b>, nunca o real em obeso · '+
+   'succinilcolina, sugamadex e adrenalina &rarr; real · opioide lipofílico &rarr; magro ou corrigido · volume corrente &rarr; ideal.</div></div></div>'+
 
-  h+='<div class="card"><h2>Anestésico local — dose máxima</h2><div class="wrap"><table><tr><th>Agente</th><th style="text-align:right">Sem vaso</th><th style="text-align:right">Com vaso</th></tr>';
-  LA.forEach(function(l){
-    var s=Math.min(l.sv*w,l.capS), c=Math.min(l.cv*w,l.capC);
-    h+='<tr><td>'+l.n+'<div class="sm mut">'+fmt(l.sv)+' / '+fmt(l.cv)+' mg/kg</div></td>'+
-       '<td class="num">'+fmt(s,0)+' mg'+(l.sv*w>l.capS?'<div class="sm mut">teto</div>':'')+'</td>'+
-       '<td class="num">'+fmt(c,0)+' mg'+(l.cv*w>l.capC?'<div class="sm mut">teto</div>':'')+'</td></tr>';
+   '<div class="card"><h2>Anestésico local — dose máxima</h2><div class="wrap"><table id="laT"></table></div>'+
+   '<div id="laAviso"></div>'+
+   '<div class="flag w"><div>Doses máximas <b>orientativas</b> para adulto hígido. Reduzir em idoso, hepatopata, gestante e ICC. '+
+   'Absorção por sítio: intercostal &gt; caudal &gt; epidural &gt; plexo &gt; subcutâneo.</div></div></div>'+
+
+   '<div class="card"><h2>Volume máximo em mL</h2>'+
+   '<div class="sm mut" style="margin:-4px 0 8px">Dose máxima sem vasoconstritor, por concentração. Mesmo peso da tabela acima.</div>'+
+   '<div class="wrap"><table id="laV"></table></div></div>'+
+
+   '<div class="card"><h2>Ventilação e via aérea</h2><div id="ventKv"></div>'+
+   '<div class="flag i"><div>Platô &lt;30 cmH₂O · driving pressure &lt;15 · PEEP 5–8 (mais em obeso e laparoscopia).</div></div></div>'+
+
+   '<div class="card"><h2>Ajustes</h2>'+
+   '<div class="cline"><div class="lb">Gotas/mL</div><input type="text" id="sG" inputmode="decimal" autocomplete="off"><div class="ustatic">equipo</div></div>'+
+   '<div class="sm mut">Macrogotas 20 · microgotas 60. Converte mL/h em gotas/min nas telas de infusão.</div></div>';
+
+  /* valores iniciais */
+  document.getElementById('sW').value = S.peso;
+  document.getElementById('sH').value = S.altura;
+  document.getElementById('sS').value = S.sexo;
+  document.getElementById('sG').value = S.gtt;
+
+  /* ouvintes: atualizam SÓ os resultados, nunca a estrutura */
+  document.getElementById('sW').addEventListener('input',function(){
+    var v=n(this.value);
+    if(isFinite(v)&&v>0&&v<400){ S.peso=v; save();
+      document.getElementById('chipWv').textContent=fmt(v,v%1===0?0:1); }
+    updateSeg();
   });
-  h+='</table></div><div class="flag w"><div>Doses máximas <b>orientativas</b> para adulto hígido. Reduzir em idoso, hepatopata, gestante e ICC. Absorção por sítio: intercostal &gt; caudal &gt; epidural &gt; plexo &gt; subcutâneo.</div></div></div>';
+  document.getElementById('sH').addEventListener('input',function(){
+    var v=n(this.value); if(isFinite(v)&&v>0&&v<260){ S.altura=v; save(); }
+    updateSeg();
+  });
+  document.getElementById('sS').addEventListener('change',function(){ S.sexo=this.value; save(); updateSeg(); });
+  document.getElementById('sG').addEventListener('input',function(){
+    var v=n(this.value); if(isFinite(v)&&v>0){ S.gtt=v; save(); }
+  });
+  updateSeg();
+}
+
+/* recalcula apenas os blocos de resultado — os campos de digitação ficam intactos */
+function updateSeg(){
+  var kv=document.getElementById('segKv'); if(!kv) return;
+  var b=bodyCalc(), w=S.peso;
+  var ok=isFinite(b.bmi)&&isFinite(b.ibw)&&b.ibw>0;
+  var cls=!ok?'—':b.bmi<18.5?'Baixo peso':b.bmi<25?'Eutrófico':b.bmi<30?'Sobrepeso':b.bmi<35?'Obesidade I':b.bmi<40?'Obesidade II':'Obesidade III';
+  kv.innerHTML=
+    '<div class="kv"><span>IMC</span><span><b>'+fmt(b.bmi,1)+'</b> kg/m² — '+cls+'</span></div>'+
+    '<div class="kv"><span>Peso ideal (Devine)</span><span><b>'+fmt(b.ibw,1)+'</b> kg</span></div>'+
+    '<div class="kv"><span>Peso corrigido</span><span>'+fmt(b.abw,1)+' kg</span></div>'+
+    '<div class="kv"><span>Peso magro (Janmahasatian)</span><span>'+fmt(b.lbw,1)+' kg</span></div>'+
+    '<div class="kv"><span>Superfície corporal</span><span>'+fmt(b.bsa,2)+' m²</span></div>';
+
+  /* ANESTÉSICO LOCAL: a dose máxima segue o peso IDEAL/magro.
+     Em obeso, o peso real superestima e aproxima da toxicidade sistêmica;
+     em magro, o ideal pode ficar acima do real — por isso usamos o MENOR dos dois. */
+  var wLA = (ok && b.ibw>0) ? Math.min(w, b.ibw) : w;
+  var t='<tr><th>Agente</th><th style="text-align:right">Sem vaso</th><th style="text-align:right">Com vaso</th></tr>';
+  LA.forEach(function(l){
+    var sv=Math.min(l.sv*wLA,l.capS), cv=Math.min(l.cv*wLA,l.capC);
+    t+='<tr><td>'+l.n+'<div class="sm mut">'+fmt(l.sv)+' / '+fmt(l.cv)+' mg/kg</div></td>'+
+       '<td class="num">'+fmt(sv,0)+' mg'+(l.sv*w>l.capS?'<div class="sm mut">teto</div>':'')+'</td>'+
+       '<td class="num">'+fmt(cv,0)+' mg'+(l.cv*w>l.capC?'<div class="sm mut">teto</div>':'')+'</td></tr>';
+  });
+  document.getElementById('laT').innerHTML=t;
+  var av=document.getElementById('laAviso');
+  if(av){
+    if(Math.abs(wLA-w)<0.5){
+      av.className='sm mut'; av.style.marginTop='8px';
+      av.innerHTML='Calculado sobre <b>'+fmt(wLA,1)+' kg</b> — peso real e ideal praticamente iguais.';
+    }else{
+      av.className='flag d'; av.style.marginTop='10px';
+      av.innerHTML='<div>Calculado sobre <b>'+fmt(wLA,1)+' kg</b> (peso ideal), não sobre os '+fmt(w,1)+' kg reais. '+
+        'Anestésico local se distribui em massa magra: usar o peso real daria <b>'+fmt(LA[0].sv*w,0)+' mg</b> de lidocaína em vez de '+
+        fmt(Math.min(LA[0].sv*wLA,LA[0].capS),0)+' mg, aproximando da toxicidade sem ganho de bloqueio.</div>';
+    }
+  }
 
   var pcts=[0.2,0.25,0.5,0.75,1,2];
-  h+='<div class="card"><h2>Volume máximo em mL</h2><div class="sm mut" style="margin:-4px 0 8px">Dose máxima sem vasoconstritor, por concentração.</div><div class="wrap"><table><tr><th>Agente</th>'+
-     pcts.map(function(x){return '<th style="text-align:right">'+String(x).replace('.',',')+'%</th>';}).join('')+'</tr>';
+  var v='<tr><th>Agente</th>'+pcts.map(function(x){return '<th style="text-align:right">'+String(x).replace('.',',')+'%</th>';}).join('')+'</tr>';
   LA.forEach(function(l){
-    var s=Math.min(l.sv*w,l.capS);
-    h+='<tr><td>'+l.n+'</td>'+pcts.map(function(x){
-      return l.pct.indexOf(x)<0?'<td class="num" style="color:var(--mut)">—</td>':'<td class="num">'+fmt(s/(x*10),0)+'</td>';
+    var sv=Math.min(l.sv*wLA,l.capS);
+    v+='<tr><td>'+l.n+'</td>'+pcts.map(function(x){
+      return l.pct.indexOf(x)<0?'<td class="num" style="color:var(--mut)">—</td>':'<td class="num">'+fmt(sv/(x*10),0)+'</td>';
     }).join('')+'</tr>';
   });
-  h+='</table></div></div>';
+  document.getElementById('laV').innerHTML=v;
 
-  h+='<div class="card"><h2>Ventilação e via aérea</h2>'+
-   '<div class="kv"><span>Volume corrente 6 mL/kg PI</span><span><b>'+fmt(6*b.ibw,0)+'</b> mL</span></div>'+
-   '<div class="kv"><span>Volume corrente 8 mL/kg PI</span><span>'+fmt(8*b.ibw,0)+' mL</span></div>'+
-   '<div class="kv"><span>Tubo orotraqueal</span><span>'+(S.sexo==='M'?'8,0–8,5':'7,0–7,5')+' mm</span></div>'+
-   '<div class="kv"><span>Profundidade (comissura)</span><span>'+(S.sexo==='M'?'22–23':'21–22')+' cm</span></div>'+
-   '<div class="flag i"><div>Platô &lt;30 cmH₂O · driving pressure &lt;15 · PEEP 5–8 (mais em obeso e laparoscopia).</div></div></div>';
-
-  h+='<div class="card"><h2>Ajustes</h2>'+
-   '<div class="cline"><div class="lb">Gotas/mL</div><input type="text" id="sG" inputmode="decimal" step="any" value="'+S.gtt+'"><div class="ustatic">equipo</div></div>'+
-   '<div class="sm mut">Macrogotas 20 · microgotas 60. Usado para converter mL/h em gotas/min nas telas de infusão.</div></div>';
-
-  el.innerHTML=h;
-  document.getElementById('sW').addEventListener('input',function(){ var v=n(this.value); if(v>0){S.peso=v;save();
-    document.getElementById('chipWv').textContent=fmt(v,v%1===0?0:1); renderSeg();} });
-  document.getElementById('sH').addEventListener('input',function(){ var v=n(this.value); if(v>0){S.altura=v;save();renderSeg();} });
-  document.getElementById('sS').addEventListener('change',function(){ S.sexo=this.value;save();renderSeg(); });
-  document.getElementById('sG').addEventListener('input',function(){ var v=n(this.value); if(v>0){S.gtt=v;save();} });
+  document.getElementById('ventKv').innerHTML=
+    '<div class="kv"><span>Volume corrente 6 mL/kg PI</span><span><b>'+fmt(6*b.ibw,0)+'</b> mL</span></div>'+
+    '<div class="kv"><span>Volume corrente 8 mL/kg PI</span><span>'+fmt(8*b.ibw,0)+' mL</span></div>'+
+    '<div class="kv"><span>Tubo orotraqueal</span><span>'+(S.sexo==='M'?'8,0–8,5':'7,0–7,5')+' mm</span></div>'+
+    '<div class="kv"><span>Profundidade (comissura)</span><span>'+(S.sexo==='M'?'22–23':'21–22')+' cm</span></div>';
 }
 
 /* ================================================================
@@ -1147,12 +1213,7 @@ document.getElementById('chipWv').textContent = fmt(S.peso, S.peso%1===0?0:1);
 render();
 </script>
 <script>
-/* registra o service worker: depois da 1ª abertura, o app funciona 100% offline */
-if('serviceWorker' in navigator){
-  window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js').catch(function(){});
-  });
-}
+if('serviceWorker' in navigator){ window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); }); }
 </script>
 </body>
 </html>
