@@ -6,14 +6,20 @@
      próxima abertura. Sem internet, cai no cache e funciona igual.
    • Ícones e manifest: cache primeiro (não mudam e não têm risco clínico).
 */
-var CACHE = 'anestex-v10';
+var CACHE = 'anestex-v11';
 var ASSETS = ['./','./index.html','./manifest.webmanifest','./icon.svg',
               './icon-180.png','./icon-192.png','./icon-512.png'];
 var NET_TIMEOUT = 4000;   // se a rede demorar mais que isso, usa o cache
 
 self.addEventListener('install', function(e){
   self.skipWaiting();
-  e.waitUntil(caches.open(CACHE).then(function(c){ return c.addAll(ASSETS); }));
+  /* no-store tambem aqui: sem isso a copia guardada para o modo aviao pode vir
+     do cache HTTP do navegador e ficar ATRAS da versao que aparece online. */
+  e.waitUntil(caches.open(CACHE).then(function(c){
+    return Promise.all(ASSETS.map(function(u){
+      return fetch(u, {cache:'no-store'}).then(function(r){ return c.put(u, r); });
+    }));
+  }));
 });
 
 self.addEventListener('activate', function(e){

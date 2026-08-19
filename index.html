@@ -644,10 +644,15 @@ var EMG = [
 /* VERSAO — mantenha igual ao CACHE do sw.js. Aparece no rodape da aba
    Seguranca para dar para saber, olhando o aparelho, se ele esta na
    versao corrigida ou numa copia velha presa no cache. */
-var APP = {v:'v10', data:'19/ago/2026'};
+var APP = {v:'v11', data:'19/ago/2026'};
 
 var S = {peso:70, altura:170, sexo:'M', gtt:20, fav:[]};
 try{ Object.assign(S, JSON.parse(localStorage.getItem('anestex')||'{}')); }catch(e){}
+/* O PESO NAO PERSISTE ENTRE ABERTURAS: volta a 70 kg toda vez que o app abre.
+   Guardar o peso do paciente anterior e armadilha — abrir o app para um caso
+   novo e calcular em cima do peso do caso passado. Altura, sexo, gotas/mL e
+   favoritos continuam salvos, porque sao preferencias, nao dados do paciente. */
+S.peso = 70;
 function save(){ try{ localStorage.setItem('anestex', JSON.stringify(S)); }catch(e){} }
 
 function n(v){ v=parseFloat(String(v).replace(',','.')); return isFinite(v)?v:NaN; }
