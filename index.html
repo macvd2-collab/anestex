@@ -646,7 +646,7 @@ var EMG = [
 /* VERSAO — mantenha igual ao CACHE do sw.js. Aparece no rodape da aba
    Seguranca para dar para saber, olhando o aparelho, se ele esta na
    versao corrigida ou numa copia velha presa no cache. */
-var APP = {v:'v12', data:'19/ago/2026'};
+var APP = {v:'v13', data:'19/ago/2026'};
 
 var S = {peso:70, altura:170, sexo:'M', gtt:20, fav:[], hbIni:12, hbMin:7};
 try{ Object.assign(S, JSON.parse(localStorage.getItem('anestex')||'{}')); }catch(e){}
@@ -1258,6 +1258,8 @@ function renderTrf(){
 
    '<div class="card"><h2>Plasma fresco congelado</h2><div id="trfPfc"></div></div>'+
 
+   '<div class="card"><h2>Complexo protrombínico (CCP)</h2><div id="trfCcp"></div></div>'+
+
    '<div class="card"><h2>Fibrinogênio e crioprecipitado</h2><div id="trfFib"></div></div>'+
 
    '<div class="card"><h2>Volemia e perda permitida</h2>'+
@@ -1334,9 +1336,29 @@ function updateTrf(){
     '<div class="kv"><span>Dose 10–15 mL/kg</span><span><b>'+fmt(pfc10,0)+'–'+fmt(pfc15,0)+' mL</b></span></div>'+
     '<div class="kv"><span>Equivale a</span><span>~'+pfcU+'–'+(pfcU+1)+' unidades (200–250 mL cada)</span></div>'+
     '<div class="kv"><span>Sobe fatores</span><span>~20–30%</span></div>'+
-    '<div class="flag i"><div>Indicado em sangramento com INR &gt; 1,5, transfusão maciça e reversão de varfarina quando não há complexo protrombínico — '+
-    'que é mais rápido, tem menos volume e é preferível se disponível. Descongelar leva 20–30 min: <b>peça antes de precisar</b>.</div></div>'+
+    '<div class="flag i"><div>Indicado em sangramento com INR &gt; 1,5, transfusão maciça e reversão de varfarina apenas quando não há complexo protrombínico — '+
+    'veja o card do CCP abaixo: é mais rápido, tem muito menos volume e é a primeira escolha quando disponível. Descongelar leva 20–30 min: <b>peça antes de precisar</b>.</div></div>'+
     '<div class="flag w"><div>Não usar como expansor nem para "corrigir" INR discretamente alterado sem sangramento. Principal causa de TRALI.</div></div>';
+
+  /* ---- complexo protrombínico ---- */
+  var cap=5000;                                  /* teto habitual por dose */
+  function ccp(ui){ var t=ui*w; return t>cap ? fmt(cap,0)+' UI (teto)' : fmt(t,0)+' UI'; }
+  document.getElementById('trfCcp').innerHTML =
+    '<div class="kv"><span>Varfarina · INR 2–4</span><span><b>25 UI/kg</b> = '+ccp(25)+'</span></div>'+
+    '<div class="kv"><span>Varfarina · INR 4–6</span><span><b>35 UI/kg</b> = '+ccp(35)+'</span></div>'+
+    '<div class="kv"><span>Varfarina · INR &gt; 6</span><span><b>50 UI/kg</b> = '+ccp(50)+'</span></div>'+
+    '<div class="kv"><span>Dose fixa (alternativa)</span><span>1.000–1.500 UI</span></div>'+
+    '<div class="kv"><span>Rivaroxabana / apixabana</span><span><b>50 UI/kg</b> = '+ccp(50)+'</span></div>'+
+    '<div class="kv"><span>Volume infundido</span><span>~40 mL por 1.000 UI</span></div>'+
+    '<div class="kv"><span>Início de ação</span><span>10–30 min · dura 6–8 h</span></div>'+
+    '<div class="flag d"><div><b>Vitamina K 5–10 mg EV lenta é obrigatória junto</b> na reversão de varfarina. '+
+    'O CCP corrige o INR em minutos, mas os fatores caem em 6–8 h; sem a vitamina K, o paciente volta a anticoagular.</div></div>'+
+    '<div class="flag i"><div>Preferível ao plasma quando há pressa: age em minutos, não precisa descongelar (20–30 min), '+
+    'não precisa de compatibilidade ABO e infunde ~40 mL em vez de '+fmt(12*w,0)+' mL. '+
+    'O de 4 fatores (II, VII, IX, X) reverte melhor que o de 3, que tem pouco fator VII.</div></div>'+
+    '<div class="flag w"><div>Risco trombótico de cerca de 1,5%, maior em dose repetida, trombofilia e evento trombótico recente. '+
+    'Não é expansor nem "corretor de coagulograma": só com sangramento ativo ou procedimento inadiável. '+
+    'Dabigatrana não responde bem — o antídoto é idarucizumabe 5 g.</div></div>';
 
   /* ---- fibrinogênio ---- */
   var crioU = Math.max(1, Math.round(w/7));
@@ -1374,6 +1396,7 @@ var TRF_ACC = [
   '<p><b>Ácido tranexâmico</b> — 1 g (ou '+D(15*p)+') em 10 min + 1 g em 8 h. Nas primeiras 3 h do trauma; depois disso o benefício desaparece.</p>'+
   '<p><b>Cálcio</b> — gluconato '+D(30*p)+' a cada 4 hemocomponentes. O citrato quela cálcio e a hipocalcemia agrava a coagulopatia e a vasoplegia.</p>'+
   '<p><b>Fibrinogênio</b> — manter &gt; 150 mg/dL (&gt; 200 em obstetrícia).</p>'+
+  '<p><b>Complexo protrombínico</b> — se o paciente usava anticoagulante oral, 25–50 UI/kg ('+fmt(25*p,0)+'–'+fmt(50*p,0)+' UI) com vitamina K. Corrige em minutos, sem o volume do plasma.</p>'+
   '<p><b>Alvos</b>: temperatura &gt; 35 °C · pH &gt; 7,2 · Ca²⁺ iônico &gt; 1,1 mmol/L · plaquetas &gt; 50.000 (100.000 se TCE).</p>'+
   '<p class="mut sm">Tríade letal: hipotermia, acidose e coagulopatia — cada uma piora as outras duas. Aquecer todo fluido e o paciente. '+
   'Hipotensão permissiva (PAS 80–90) até controle do foco, exceto em TCE, onde a perfusão cerebral manda.</p>';}},
