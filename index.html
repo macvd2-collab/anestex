@@ -646,15 +646,14 @@ var EMG = [
 /* VERSAO — mantenha igual ao CACHE do sw.js. Aparece no rodape da aba
    Seguranca para dar para saber, olhando o aparelho, se ele esta na
    versao corrigida ou numa copia velha presa no cache. */
-var APP = {v:'v14', data:'19/ago/2026'};
+var APP = {v:'v15', data:'19/ago/2026'};
 
-var S = {peso:70, altura:170, sexo:'M', gtt:20, fav:[], hbIni:12, hbMin:7};
+var S = {peso:70, altura:170, sexo:'M', gtt:20, fav:[], hbIni:12, hbMin:7, pesoTs:0};
 try{ Object.assign(S, JSON.parse(localStorage.getItem('anestex')||'{}')); }catch(e){}
-/* O PESO NAO PERSISTE ENTRE ABERTURAS: volta a 70 kg toda vez que o app abre.
-   Guardar o peso do paciente anterior e armadilha — abrir o app para um caso
-   novo e calcular em cima do peso do caso passado. Altura, sexo, gotas/mL e
-   favoritos continuam salvos, porque sao preferencias, nao dados do paciente. */
-S.peso = 70;
+/* TUDO PERSISTE, inclusive o peso. O iOS descarrega o app assim que voce troca
+   de aplicativo, e ao voltar ele RECARREGA do zero — zerar o peso aqui obrigava
+   a redigitar tudo no meio do caso. A aba Seguranca mostra ha quanto tempo o
+   peso foi definido, para nao usar por engano o peso do paciente anterior. */
 function save(){ try{ localStorage.setItem('anestex', JSON.stringify(S)); }catch(e){} }
 
 function n(v){ v=parseFloat(String(v).replace(',','.')); return isFinite(v)?v:NaN; }
@@ -711,6 +710,43 @@ function concPerMl(cM,cU,cV){ var q=parseU(cU); return (cM*q.f)/cV; }
    ROTEAMENTO
    ================================================================ */
 var R = {tab:'drg', level:'cats', cat:null, drug:null, sub:'inf', set:null, q:''};
+
+/* ---- memoria de navegacao ----
+   O iOS recarrega o app quando voce volta de outro aplicativo. Sem isto, voce
+   cairia na tela inicial e perderia a droga, a dose e a diluicao que ja tinha
+   montado. Guardamos o suficiente para reabrir exatamente onde estava. */
+var navT=null;
+function saveNav(){
+  clearTimeout(navT);
+  navT=setTimeout(function(){
+    try{
+      localStorage.setItem('anestex_nav', JSON.stringify({
+        tab:R.tab, level:R.level, cat:R.cat,
+        drug:R.drug?R.drug.n:null, sub:R.sub,
+        set:R.set?R.set.n:null, q:R.q, cs:CS, ts:Date.now()
+      }));
+    }catch(e){}
+  }, 250);
+}
+function loadNav(){
+  try{
+    var v=JSON.parse(localStorage.getItem('anestex_nav')||'null');
+    if(!v) return;
+    if(VIEWS.indexOf(v.tab)>=0) R.tab=v.tab;
+    R.level = v.level||'cats';
+    R.cat   = v.cat||null;
+    R.sub   = v.sub||'inf';
+    R.q     = v.q||'';
+    R.drug  = v.drug ? findDrug(v.drug) : null;
+    R.set   = v.set ? (SETS.filter(function(x){return x.n===v.set;})[0]||null) : null;
+    if(v.cs && R.drug && v.cs.drug===R.drug.n) CS=v.cs;
+    /* coerencia: nao deixar a tela num estado impossivel se a base mudou */
+    if(R.level==='calc' && !R.drug){ R.level='cats'; R.cat=null; }
+    if(R.level==='list' && !R.cat){ R.level='cats'; }
+    if(R.sub==='inf' && R.drug && !R.drug.inf) R.sub = R.drug.bol?'bol':'note';
+    if(R.sub==='bol' && R.drug && !R.drug.bol) R.sub = R.drug.inf?'inf':'note';
+  }catch(e){}
+}
 var VIEWS = ['drg','sets','fav','seg','trf','emg'];
 
 document.querySelectorAll('nav button').forEach(function(b){
@@ -747,11 +783,12 @@ function render(){
   if(R.tab==='trf') renderTrf();
   if(R.tab==='emg') renderEmg();
   window.scrollTo(0,0);
+  saveNav();
 }
 
 /* ---------- peso global ---------- */
 function setPeso(v){
-  S.peso=v; save();
+  S.peso=v; S.pesoTs=Date.now(); save();
   document.getElementById('chipWv').textContent = fmt(v, v%1===0?0:1);
   render();
 }
@@ -919,7 +956,7 @@ function bindInf(d){
 
   function paint(src){
     if(lock) return; lock=true;
-    var p=n(el('ciW').value); if(isFinite(p)&&p>0&&p!==S.peso){ S.peso=p; save();
+    var p=n(el('ciW').value); if(isFinite(p)&&p>0&&p!==S.peso){ S.peso=p; S.pesoTs=Date.now(); save();
       document.getElementById('chipWv').textContent=fmt(p,p%1===0?0:1); }
     p = isFinite(p)&&p>0 ? p : S.peso;
     CS.uRate=el('ciDU').value; CS.uAbs=el('ciAU').value;
@@ -946,7 +983,7 @@ function bindInf(d){
     }
 
     if(isFinite(base)){
-      CS.dose = fromBase(base, CS.uRate, p);
+      CS.dose = fromBase(base, CS.uRate, p); saveNav();
       if(src!=='rate') el('ciD').value = fmt(CS.dose);
       if(src!=='abs')  el('ciA').value = fmt(fromBase(base, CS.uAbs, p));
       if(src!=='ml')   el('ciR').value = isFinite(c)&&c>0 ? fmt(base/c) : '';
@@ -1163,7 +1200,7 @@ function renderSeg(){
   /* ouvintes: atualizam SÓ os resultados, nunca a estrutura */
   document.getElementById('sW').addEventListener('input',function(){
     var v=n(this.value);
-    if(isFinite(v)&&v>=1&&v<=400){ S.peso=v; save();
+    if(isFinite(v)&&v>=1&&v<=400){ S.peso=v; S.pesoTs=Date.now(); save();
       document.getElementById('chipWv').textContent=fmt(v,v%1===0?0:1); }
     updateSeg();
   });
@@ -1180,6 +1217,18 @@ function renderSeg(){
   updateSeg();
 }
 
+/* ha quanto tempo o peso atual foi definido — sem isso, o peso persistido
+   pode ser do paciente anterior sem nenhum sinal disso na tela */
+function idadePeso(){
+  if(!S.pesoTs) return '';
+  var min = Math.floor((Date.now()-S.pesoTs)/60000);
+  var txt = min<1 ? 'agora' : min<60 ? 'há '+min+' min'
+          : min<1440 ? 'há '+Math.floor(min/60)+' h' : 'há '+Math.floor(min/1440)+' dia(s)';
+  var velho = min>=240;
+  return '<div class="kv"><span>Peso definido</span><span'+(velho?' style="color:var(--warn)"':'')+'>'+txt+'</span></div>'+
+    (velho? '<div class="flag w"><div>O peso em uso foi definido '+txt+'. Se este é outro paciente, atualize antes de calcular.</div></div>' : '');
+}
+
 /* recalcula apenas os blocos de resultado — os campos de digitação ficam intactos */
 function updateSeg(){
   var kv=document.getElementById('segKv'); if(!kv) return;
@@ -1191,7 +1240,8 @@ function updateSeg(){
     '<div class="kv"><span>Peso ideal (Devine)</span><span><b>'+fmt(b.ibw,1)+'</b> kg</span></div>'+
     '<div class="kv"><span>Peso corrigido</span><span>'+fmt(b.abw,1)+' kg</span></div>'+
     '<div class="kv"><span>Peso magro (Janmahasatian)</span><span>'+fmt(b.lbw,1)+' kg</span></div>'+
-    '<div class="kv"><span>Superfície corporal</span><span>'+fmt(b.bsa,2)+' m²</span></div>';
+    '<div class="kv"><span>Superfície corporal</span><span>'+fmt(b.bsa,2)+' m²</span></div>'+
+    idadePeso();
 
   /* ANESTÉSICO LOCAL: a dose máxima segue o peso IDEAL/magro.
      Em obeso, o peso real superestima e aproxima da toxicidade sistêmica;
@@ -1445,6 +1495,24 @@ function renderEmg(){
    INÍCIO
    ================================================================ */
 document.addEventListener('gesturestart',function(e){ e.preventDefault(); });
+
+/* O iOS descarrega o app ao trocar de aplicativo: grave na hora em que ele
+   esconde, senao o debounce de 250 ms pode nao chegar a rodar. */
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState==='hidden'){
+    clearTimeout(navT);
+    try{
+      localStorage.setItem('anestex_nav', JSON.stringify({
+        tab:R.tab, level:R.level, cat:R.cat, drug:R.drug?R.drug.n:null,
+        sub:R.sub, set:R.set?R.set.n:null, q:R.q, cs:CS, ts:Date.now()
+      }));
+      localStorage.setItem('anestex', JSON.stringify(S));
+    }catch(e){}
+  }
+});
+window.addEventListener('pagehide', function(){ try{ localStorage.setItem('anestex', JSON.stringify(S)); }catch(e){} });
+
+loadNav();
 document.getElementById('chipWv').textContent = fmt(S.peso, S.peso%1===0?0:1);
 render();
 </script>
